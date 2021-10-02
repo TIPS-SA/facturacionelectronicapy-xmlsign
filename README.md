@@ -1,5 +1,4 @@
-# facturacionelectronicapy-xmlsign
-
+# Facturación Electrónica - Firma de XML para la SET (Paraguay)
 Este módulo NodeJS firma la factura electrónica en formato XML para enviar a la SET mediante el estándar DSIG utilizando certificados del tipo PKCS#12
 
 ## Instalación
@@ -17,7 +16,7 @@ TypeScript:
 import xmlsign from 'facturacionelectronicapy-xmlsign';
 
 xmlsign
-.signXML('/full_path/Certificado.p12', '123456', xmlString, 'DE')
+.signXML(xmlString, '/full_path/Certificado.p12', '123456')
 .then(xmlFirmado => console.log("XML firmado", xmlFirmado));
 
 ```

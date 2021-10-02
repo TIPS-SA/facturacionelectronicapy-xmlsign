@@ -27,7 +27,7 @@ class XMLDsig {
         this.signedInfo = {
             CanonicalizationMethod: {
                 _attributes: {
-                    Algorithm: 'http://www.w3.org/TR/2001/REC-xml-c14n-20010315'
+                    Algorithm: 'http://www.w3.org/2001/10/xml-exc-c14n#'
                 }
             },
             SignatureMethod: {
@@ -47,7 +47,7 @@ class XMLDsig {
                             }
                         }, {
                             _attributes: {
-                                Algorithm: 'http://www.w3.org/TR/2001/REC-xml-c14n-20010315#WithComments'
+                                Algorithm: 'http://www.w3.org/2001/10/xml-exc-c14n#'
                             }
                         }
                     ]
@@ -74,12 +74,14 @@ class XMLDsig {
             xmlns: 'http://www.w3.org/2000/09/xmldsig#'
         };
         if (tag) {
-            if (doc[root[0]][tag]) {
-                doc[root[0]][tag]._attributes = { id: tag };
-            } else {
+            if (!doc[root[0]][tag]) {
+//                doc[root[0]][tag]._attributes = { id: tag };
+//            } else {
                 throw new Error('Tag ' + tag + ' no encontrado en el Archivo XML');
             }
-            this.signedInfo.Reference._attributes.URI = `#${tag}`;
+            //console.log("===>", doc[root[0]][tag]);
+            const idTag:any = doc[root[0]][tag]._attributes.Id;
+            this.signedInfo.Reference._attributes.URI = `#${idTag}`;
         }
         
         if (doc[root[0]]._attributes) {
