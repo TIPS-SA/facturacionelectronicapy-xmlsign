@@ -1,29 +1,26 @@
-# pkcs12-xml
+# facturacionelectronicapy-xmlsign
 
-Esta librería se creó con el propósito de firmar documentos XML mediante el estándar DSIG con contenedores PKCS#12 desde aplicaciones escritas para nodejs.
+Este módulo NodeJS firma la factura electrónica en formato XML para enviar a la SET mediante el estándar DSIG utilizando certificados del tipo PKCS#12
 
 ## Instalación
 
 ```
-$ npm install pkcs12-xml
+$ npm install facturacionelectronicapy-xmlsign
 ```
 
-## Ejemplo
+## Firma del Archivo XML
 
-### Firmar el tag "book" del documento xml
+### Firmar los datos de la tag "DE" del documento xml
 
-```javascript
-const Dsig = require('pkcs12-xml');
+TypeScript:
+```typescript
+import xmlsign from 'facturacionelectronicapy-xmlsign';
 
-var dsig = new Dsig('store.p12');
+xmlsign
+.signXML('/full_path/Certificado.p12', '123456', xmlString, 'DE')
+.then(xmlFirmado => console.log("XML firmado", xmlFirmado));
 
-try {
-    dsig.openSession('12345678');
-    var xml = '<library><book><name>Julio Berne</name></book></library>';
-    console.log(dsig.computeSignature(xml, 'book'));
-} catch(e) {
-    console.error(e);
-} finally {
-    dsig.closeSession();
-}
 ```
+
+Para saber como generar el Archivo XML visita éste proyecto de Git: 
+https://github.com/marcosjara/facturacionelectronicapy-xmlgen
