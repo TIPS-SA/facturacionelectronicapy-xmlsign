@@ -15,9 +15,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/marcosjara/facturacionelectronicapy-xmlsign.git"
+    "url": "https://github.com/marcosjara/facturacionelectronicapy-xmlsign.git"
   },
-  "files": [
+  "bugs": {
+    "url": "https://github.com/marcosjara/facturacionelectronicapy-xmlsign/issues"
+  },
+  "homepage": "https://github.com/marcosjara/facturacionelectronicapy-xmlsign#readme",
+    "files": [
     "dist/**/*"
   ],
   "keywords": [
