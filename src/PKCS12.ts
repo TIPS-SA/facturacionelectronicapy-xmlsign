@@ -44,11 +44,26 @@ class PKCS12 {
     }
 
     signature(xml: string, privateKey: any) {
+        //const md = forge.md.sha256.create();
         const md = forge.md.sha256.create();
         md.update(xml, 'utf8');
         var key = forge.pki.privateKeyFromPem(privateKey);
         return key.sign(md);
     }
+
+    getPrivateKeyFromPEM(privateKey: any) {
+        var key = forge.pki.privateKeyFromPem(privateKey);
+        return key;
+    }
+    signature22222(xml: string, privateKey: any) {
+        const md = forge.md.sha256.create();
+        md.update(xml, 'utf8');
+        var key = forge.pki.privateKeyFromPem(privateKey);
+        //let signature = forge.util.encode64(key.sign(md));
+        
+        return key.sign(md);
+    }
+    
 }
 
 export default new PKCS12();

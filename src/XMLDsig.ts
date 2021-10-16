@@ -1,11 +1,29 @@
-import convert from 'xml-js';
+//import convert from 'xml-js';
+import xml2js from 'xml2js';
+
 import sha256 from 'crypto-js/sha256';
 import Base64 from 'crypto-js/enc-base64';
 import token from './PKCS12';
+//import crypto from 'crypto';
+//const { subtle } = require('crypto').webcrypto;
+const { exec } = require("child_process");
+var xmldom = require("xmldom");
+var fs = require("fs");
+var c14n = require("xml-c14n")();
+
+var atob = require('atob');
+
+var xmldsigjs = require("xmldsigjs");
+//var WebCrypto = require("node-webcrypto-ossl");
+//xmldsigjs.Application.setEngine("OpenSSL", new WebCrypto());
+//xmldsigjs.Application.setEngine("OpenSSL", new (await import("node-webcrypto-ossl")).Crypto)
+//var SignedXml = require('xml-crypto').SignedXml;
+import { SignedXml, FileKeyInfo } from 'xml-crypto';
 
 class XMLDsig {
-
-    private signOpts: any;
+    private file: any;
+    private passphase: any;
+    //private signOpts: any;
     private signedInfo: any;
     private certificate: any;
 
@@ -13,47 +31,49 @@ class XMLDsig {
     }
 
     openFile(file: string, passphase: string) {
+        this.file = file;
+        this.passphase = passphase;
         token.openFile(file, passphase);
         this.setXMLSignOpts();
     }
 
     setXMLSignOpts() {
-        this.signOpts = {
+        /*this.signOpts = {
             compact: true,
             ignoreComment: true,
             spaces: 2,
             fullTagEmptyElement: true
-        };
+        };*/
         this.signedInfo = {
             CanonicalizationMethod: {
-                _attributes: {
+                $: {
                     Algorithm: 'http://www.w3.org/2001/10/xml-exc-c14n#'
                 }
             },
             SignatureMethod: {
-                _attributes: {
+                $: {
                     Algorithm: 'http://www.w3.org/2001/04/xmldsig-more#rsa-sha256'
                 }
             },
             Reference: {
-                _attributes: {
+                $: {
                     URI: ''
                 },
                 Transforms: {
                     Transform: [
                         {
-                            _attributes: {
+                            $: {
                                 Algorithm: 'http://www.w3.org/2000/09/xmldsig#enveloped-signature'
                             }
                         }, {
-                            _attributes: {
+                            $: {
                                 Algorithm: 'http://www.w3.org/2001/10/xml-exc-c14n#'
                             }
                         }
                     ]
                 },
                 DigestMethod: {
-                    _attributes: {
+                    $: {
                         Algorithm: 'http://www.w3.org/2001/04/xmlenc#sha256'
                     }
                 },
@@ -61,56 +81,172 @@ class XMLDsig {
             }
         };
     }
+    /**
+     * Firma con Java
+     * @param xml 
+     * @param tag 
+     * @returns 
+     */
+    async signDocument(xml: string, tag: any) {
+        return new Promise((resolve, reject) => {
+            const java8Path = `"C:\\Program Files\\Java\\jdk1.8.0_221\\bin\\java"`;
+            
+            const classPath = '-classpath ' + __dirname + ' SignXML';
+            const tmpXMLToSign = '' + __dirname + '/xml_sign_temp.xml';
+            
 
-    signDocument(xml: string, tag: any) {
-        
-        const doc: any = convert.xml2js(xml, this.signOpts);
-        const root: any = Object.keys(doc).filter(key => key !== '_declaration');
+            fs.writeFileSync(tmpXMLToSign, xml, {encoding: 'utf8'});
 
-        if (root.length !== 1) {
-            throw new Error('Debe ser un Archivo XML');
+            exec(`${java8Path} ${classPath} ${tmpXMLToSign} ${this.file} ${this.passphase}`, (error: any, stdout: any, stderr: any) => {
+                if (error) {
+                    reject(error);
+                }
+                if (stderr) {
+                    reject(stderr);
+                }
+                
+                try {
+                    fs.unlinkSync(tmpXMLToSign);
+                    //file removed
+                } catch(err) {
+                    console.error(err);
+                }
+
+                //console.log(`signedXML: ${stdout}`);
+
+                //resolve(Buffer.from(`${stdout}`,'utf8').toString());
+                //fs.writeFileSync(tmpXMLToSign + ".result.xml", `${stdout}`, {encoding: 'utf8'});
+                //let resultXML = fs.readFileSync(tmpXMLToSign + ".result.xml", {encoding: 'utf8'});
+                resolve(`${stdout}`);
+            });
+        });
+    }
+
+
+    async signDocument2(xml: string, tag: any) {
+
+        xmldsigjs.Application.setEngine("OpenSSL", new (await import("node-webcrypto-ossl")).Crypto);
+
+        let id = '';
+        var parser = new xml2js.Parser({explicitArray: false});
+        const xmlDocumentJSON: any = await parser.parseStringPromise(xml);
+
+        if (tag) {
+            if (!xmlDocumentJSON['rDE'][tag]) {
+                throw new Error('Tag ' + tag + ' no encontrado en el Archivo XML');
+            }
+            const idTag: any = xmlDocumentJSON['rDE'][tag].$.Id;
+            id = `${idTag}`;
         }
-        const _attributes : any = {
+
+        let key = Buffer.from(token.getPrivateKey()+"", 'utf8')
+        let cert = Buffer.from(token.getCertificate()+"", 'utf8')
+
+        let keysS = await this.importKey(token.getPrivateKey()+"");
+        console.log("keysS", keysS);
+
+        let signature = new xmldsigjs.SignedXml();
+
+        signature.Sign({ name: "RSASSA-PKCS1-v1_5" }, keysS, xmldsigjs.Parse(xml), {
+            
+            references: [
+                { id, hash: "SHA-512", transforms: ["enveloped", "c14n"] },
+            ]
+        }).then(() => {
+            console.log("sig.tostring...", signature.toString());
+        });
+    }
+    
+    async signDocument3(xml: string, tag: any) {
+        
+
+        //var option = {implicitTransforms: ["http://www.w3.org/2000/09/xmldsig#enveloped-signature", "http://www.w3.org/2001/10/xml-exc-c14n#"]}
+        var option = {implicitTransforms: ["http://www.w3.org/2001/10/xml-exc-c14n#"]};
+        var sig = new SignedXml(null, option);
+        sig.signatureAlgorithm = "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256";
+        //sig.signatureAlgorithm = "http://www.w3.org/TR/2001/REC-xml-c14n-20010315";
+        //sig.signatureAlgorithm = "http://www.w3.org/2001/10/xml-exc-c14n#";
+        
+        
+        //sig.canonicalizationAlgorithm = "http://www.w3.org/2000/09/xmldsig#enveloped-signature";
+        sig.addReference("//*[local-name(.)='DE']", ["http://www.w3.org/2000/09/xmldsig#enveloped-signature", "http://www.w3.org/2001/10/xml-exc-c14n#"], "http://www.w3.org/2001/04/xmlenc#sha256");
+        //sig.addReference("//*[local-name(.)='DE']");
+        sig.signingKey = Buffer.from(token.getPrivateKey()+"", 'utf8');
+
+        sig.keyInfoProvider = {
+            file : '',
+            getKeyInfo: (key, prefix) => {
+                return `<X509Data><X509Certificate>${token.getCertificate()}</X509Certificate></X509Data>`;
+            },
+            getKey: (keyInfo: Node) : Buffer => {
+                return Buffer.from(token.getPrivateKey()+"");
+            }
+        };
+        sig.computeSignature(xml);
+
+        let xmlSigned = sig.getSignedXml();
+
+        token.clean();
+
+        console.log("signed", xmlSigned);
+        return xmlSigned;
+
+    }
+
+    async signDocument_El_que_que_funcionar(xml: string, tag: any) {
+
+        var parser = new xml2js.Parser({explicitArray: false});
+        const xmlDocumentJSON: any = await parser.parseStringPromise(xml);
+
+        const $ : any = {
             xmlns: 'http://www.w3.org/2000/09/xmldsig#'
         };
         if (tag) {
-            if (!doc[root[0]][tag]) {
-//                doc[root[0]][tag]._attributes = { id: tag };
-//            } else {
+            if (!xmlDocumentJSON['rDE'][tag]) {
                 throw new Error('Tag ' + tag + ' no encontrado en el Archivo XML');
             }
-            //console.log("===>", doc[root[0]][tag]);
-            const idTag:any = doc[root[0]][tag]._attributes.Id;
-            this.signedInfo.Reference._attributes.URI = `#${idTag}`;
+            const idTag: any = xmlDocumentJSON['rDE'][tag].$.Id;
+            this.signedInfo.Reference.$.URI = `#${idTag}`;
         }
         
-        if (doc[root[0]]._attributes) {
-            const attributes = Object.keys(doc[root[0]]._attributes);
-            for (let i = 0; i < attributes.length; i++) {
-                const attribute : string = attributes[i];
-                if (attribute.startsWith('xmlns:')) {
-                    _attributes[attribute] = doc[root[0]]._attributes[attribute];
-                }
-            }
-        }
+        let objetoAFirmar = {...xmlDocumentJSON['rDE']};
+        delete objetoAFirmar.$;
+        delete objetoAFirmar.dVerFor;
+
+        var builder = new xml2js.Builder();
+        let xmlToDigest = builder.buildObject(objetoAFirmar);
+
+        //console.log("xmlToDigest a", xmlToDigest);
+        xmlToDigest = await this.normalizeXML(xmlToDigest);
+        xmlToDigest = xmlToDigest.replace('<?xml version="1.0" encoding="UTF-8" standalone="yes"?>', '');
+        //xmlToDigest = await this.canonicalizar(xmlToDigest);
+        //Prueba
         
-        const hash = this.digest(convert.js2xml({ [root[0]]: doc[root[0]] }, this.signOpts));
+        //xmlToDigest = xmlToDigest.replace('<DE Id="01800695631001001000000122020101411987164320">', '');
+        //xmlToDigest = xmlToDigest.replace('</DE>', '');
+        //xmlToDigest = xmlToDigest.split('\n').slice(1).join('\n');
+
+        console.log("xmlToDigest b", xmlToDigest);
+        const hash = this.digest(xmlToDigest);
 
         this.signedInfo.Reference.DigestValue = hash;
-        const signedInfoXML = convert.js2xml({
+
+        var signedInfoXML = builder.buildObject({
             SignedInfo: {
-                _attributes,
+                $,
                 CanonicalizationMethod: this.signedInfo.CanonicalizationMethod,
                 SignatureMethod: this.signedInfo.SignatureMethod,
                 Reference: this.signedInfo.Reference
             }
-        //}, this.signOpts).split('\n').map(e => e.trim()).join('\n');
-        }, this.signOpts).split('\n').map(e => e).join('\n');
+        });
+        //signedInfoXML = signedInfoXML.split('\n').slice(1).join('\n');
+        xmlToDigest = await this.canonicalizar(signedInfoXML);
 
+        console.log("xmlToDigest", xmlToDigest);
         let signature = this.signatureValue(signedInfoXML);
 
-        doc[root[0]].Signature = {
-            _attributes: {
+        xmlDocumentJSON['rDE'].Signature = {
+            $: {
                 xmlns: 'http://www.w3.org/2000/09/xmldsig#'
             },
             SignedInfo: this.signedInfo,
@@ -121,31 +257,44 @@ class XMLDsig {
                 }
             }
         };
-        let flag = false;
+        xmlDocumentJSON['rDE']['gCamFuFD'] = this.agregarQr(xmlDocumentJSON);
 
-        const xmlSigned = convert.js2xml(doc, this.signOpts).split('\n').map(e => {
-            if (e.indexOf('<Signature') >= 0) {
-                flag = true;
-            }
-            if (e.indexOf('</Signature>') >= 0) {
-                flag = false;
-                //return e.trim();
-                return e;
-            }
-            if (flag) {
-                //return e.trim();
-                return e;
-            } else {
-                return e;
-            }
-        }).join('\n').replace('</Signature>\n', '</Signature>\n');
-        
+        var xmlSigned = builder.buildObject(xmlDocumentJSON);
+        //xmlSigned = await this.normalizeXML(xmlSigned);
+        console.log("signed", xmlSigned);
         token.clean();
 
         return xmlSigned;
     }
 
-    /*digest(xml) {
+    canonicalizar(xml: string) : Promise<string>{
+        return new Promise((resolve, reject) => {
+            let document = (new xmldom.DOMParser()).parseFromString(xml);
+    
+            let canonicaliser = c14n.createCanonicaliser("http://www.w3.org/2001/10/xml-exc-c14n#");
+            //let canonicaliser = c14n.createCanonicaliser("http://www.w3.org/2001/10/xml-exc-c14n#WithComments");
+            
+            /*console.log("canonicalising with algorithm: " + canonicaliser.name());
+            console.log("");
+            
+            console.log("INPUT");
+            console.log("");
+            //console.log(xmlData);
+            
+            console.log("");
+            */
+            canonicaliser.canonicalise(document.documentElement, function(err: any, res: any) {
+                if (err) {
+                    reject(err);
+                }
+                
+                /*console.log("RESULT");
+                console.log("");*/
+                resolve(res);
+            });
+        });
+    }
+    /*digest(xml: string) {
         var sha256 = crypto.createHash('sha256');
 
         sha256.update(xml, 'utf8');
@@ -162,12 +311,74 @@ class XMLDsig {
         let privateKey = token.getPrivateKey();
         this.certificate = token.getCertificate();
         let signature = token.signature(xml, privateKey);
+        //console.log("signature", signature);
         return Buffer.from(signature, 'binary').toString('base64');
     }
 
     getCertificate() {
         let certificate = token.getCertificate();
         return `-----BEGIN CERTIFICATE-----${certificate}\n-----END CERTIFICATE-----`;
+    }
+
+    private normalizeXML(xml: string) {
+        xml = xml.split('\r\n').join('');
+                xml = xml.split('\n').join('');
+                xml = xml.split('\t').join('');
+                xml = xml.split('    ').join('');
+                xml = xml.split('>    <').join('><');
+                xml = xml.split('>  <').join('><');
+                xml = xml.replace(/\r?\n|\r/g, '');
+        return xml;
+    }
+
+    private agregarQr(obj: any) {
+        let qrResult : any = {};
+        qrResult['dCarQR'] = {
+            _ : 'reemplazarQrCode'
+        };
+        return qrResult;
+    }
+
+
+    removeLines(str: string) {
+        return str.replace("\n", "");
+    }
+    
+    base64ToArrayBuffer(b64: string) {
+        var byteString = atob(b64);
+        var byteArray = new Uint8Array(byteString.length);
+        for(var i=0; i < byteString.length; i++) {
+            byteArray[i] = byteString.charCodeAt(i);
+        }
+    
+        return byteArray;
+    }
+    
+    pemToArrayBuffer(pem: string) {
+        var b64Lines = this.removeLines(pem);
+        b64Lines = b64Lines.replace('-----BEGIN PRIVATE KEY-----', '');
+        b64Lines = b64Lines.replace('-----END PRIVATE KEY-----', '');
+        b64Lines = b64Lines.replace('-----BEGIN RSA PRIVATE KEY-----', '');
+        b64Lines = b64Lines.replace('-----END RSA PRIVATE KEY-----', '');
+    
+        console.log(b64Lines);
+        return this.base64ToArrayBuffer(b64Lines);
+    }
+
+    async importKey(yourprivatekey: string) {
+        let crypto = new (await import("node-webcrypto-ossl")).Crypto
+        //window.crypto.subtle.importKey(
+        return crypto.subtle.importKey(
+            "pkcs8",
+            this.pemToArrayBuffer(yourprivatekey),
+            {
+                name: "RSA-OAEP",
+                hash: {name: "SHA-256"} // or SHA-512
+            },
+            true,
+            ["decrypt"]
+        
+        );
     }
 }
 
