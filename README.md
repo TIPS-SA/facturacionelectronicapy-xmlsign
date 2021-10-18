@@ -1,6 +1,9 @@
 # Facturación Electrónica - Firma de XML para la SET (Paraguay)
 Este módulo NodeJS firma la factura electrónica en formato XML para enviar a la SET mediante el estándar DSIG utilizando certificados del tipo PKCS#12
 
+## Características
+- Estampa de tiempo de la firma digital automática.
+
 ## Instalación
 
 ```

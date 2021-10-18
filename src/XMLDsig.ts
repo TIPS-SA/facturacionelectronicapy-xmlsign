@@ -81,6 +81,7 @@ class XMLDsig {
             }
         };
     }
+
     /**
      * Firma con Java
      * @param xml 
@@ -88,16 +89,18 @@ class XMLDsig {
      * @returns 
      */
     async signDocument(xml: string, tag: any) {
-        return new Promise((resolve, reject) => {
+        return new Promise(async (resolve, reject) => {
+            //console.log("A firmar", xml);
+            //xml = await this.asignarFechaFirma(xml);
+
             const java8Path = `"C:\\Program Files\\Java\\jdk1.8.0_221\\bin\\java"`;
             
             const classPath = '-classpath ' + __dirname + ' SignXML';
             const tmpXMLToSign = '' + __dirname + '/xml_sign_temp.xml';
-            
 
             fs.writeFileSync(tmpXMLToSign, xml, {encoding: 'utf8'});
 
-            exec(`${java8Path} ${classPath} ${tmpXMLToSign} ${this.file} ${this.passphase}`, (error: any, stdout: any, stderr: any) => {
+            exec(`${java8Path} -Dfile.encoding=IBM850 ${classPath} ${tmpXMLToSign} ${this.file} ${this.passphase}`, {encoding: "UTF-8"}, (error: any, stdout: any, stderr: any) => {
                 if (error) {
                     reject(error);
                 }
@@ -379,6 +382,28 @@ class XMLDsig {
             ["decrypt"]
         
         );
+    }
+
+    private async asignarFechaFirma(xml: string) {
+        var parser = new xml2js.Parser({explicitArray: false});
+        const xmlDocumentJSON: any = await parser.parseStringPromise(xml);
+
+        xmlDocumentJSON['rDE']['DE']['dFecFirma'] = this.jsonFormat(new Date());
+
+        var builder = new xml2js.Builder();
+        xml = builder.buildObject(xmlDocumentJSON);
+
+        xml = this.normalizeXML(xml);
+        return xml;
+    }
+    private jsonFormat(fecha: Date) {
+        return fecha.getFullYear()  + '-' + this.lpad((fecha.getMonth()+1),2) + '-' + this.lpad(fecha.getDate(),2) + 'T' + this.lpad(fecha.getHours(),2) + ':' + this.lpad(fecha.getMinutes(),2) + ':' + this.lpad(fecha.getSeconds(),2);
+    }
+
+    private lpad(num: number, size: number) {
+        let s = num + '';
+        while (s.length < size) s = '0' + s;
+        return s;
     }
 }
 

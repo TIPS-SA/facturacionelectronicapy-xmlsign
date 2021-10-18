@@ -42,17 +42,27 @@ import org.w3c.dom.NodeList;
  * This is a simple example of validating an XML
  * Signature using the JSR 105 API. It assumes the key needed to
  * validate the signature is contained in a KeyValue KeyInfo.
+ *
+ * Reimplementado por Marcos Jara para la Factura Electrónica de Paraguay - 2021
+ *
+ * Requiere Java 8
+ * 
+ * Codigo implementado según ejemplo extraido de:
  * https://gist.github.com/rponte/646a4259a2e012e4aca50f2bb02e796f
+ *
+ * Ejemplo de invocación
+ * java SignXML "/archivo.xml" "/certificado.p12" "passwordCertificado"
+ * 
+ * Puede validar el XML Firmado en:
+ * https://tools.chilkat.io/xmlDsigVerify.cshtml
+ *
+ * Esta Clase forma parte del proyecto NodeJS:
+ * https://www.npmjs.com/package/facturacionelectronicapy-xmlsign
+ *
  */
 public class SignXML {
 	private static final String C14NEXC = "http://www.w3.org/2001/10/xml-exc-c14n#";
 
-    //
-    // Synopsis: java Validate [document]
-    //
-    //    where "document" is the name of a file containing the XML document
-    //    to be validated.
-    //
     public static void main(String[] args) throws Exception {
     	DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
         dbFactory.setNamespaceAware(true);
@@ -60,19 +70,14 @@ public class SignXML {
 		DocumentBuilder builder = dbFactory.newDocumentBuilder();
         KeyStore p12 = KeyStore.getInstance("pkcs12");
 
-        
-        Document doc = (Document) builder.parse(new File("C:\\dev\\workspace\\rshk-jsifenlib-master\\src\\main\\java\\xml_para_validar.xml"));
-//		Document doc = (Document) builder.parse(new File(args[0]));
+		Document doc = (Document) builder.parse(new File(args[0]));
 
-    	String passphase = "tips39795hs82w67gw_";
-//    	String passphase = args[2];
+    	String passphase = args[2];
 
-        p12.load(new FileInputStream("C:\\Users\\marco\\OneDrive\\Escritorio\\Facturacion Electronica - Lecturas\\certificadodigitaltipssa\\80069563-1.p12"), passphase.toCharArray());
-//        p12.load(new FileInputStream(args[1]), passphase.toCharArray());
+        p12.load(new FileInputStream(args[1]), passphase.toCharArray());
 
         Enumeration e = p12.aliases();
         String alias = (String) e.nextElement();
-        //System.out.println("Alias certifikata:" + alias);
         Key privateKey = p12.getKey(alias, passphase.toCharArray());
 
         KeyStore.PrivateKeyEntry keyEntry
@@ -89,7 +94,7 @@ public class SignXML {
 		
         Node afterNode = doc.getElementsByTagName("DE").item(0);
         String id = afterNode.getAttributes().getNamedItem("Id").getNodeValue();
-        //System.out.println("-----------------------------------\n" + id );
+
         // Create a Reference to the enveloped document
 		DigestMethod digestMethod = sigFactory.newDigestMethod(DigestMethod.SHA256, null);
 		Reference ref = sigFactory.newReference("#" + id,
@@ -124,7 +129,6 @@ public class SignXML {
 
         Node node = doc.getElementsByTagName("rDE").item(0);
 
-        
         // Create a DOMSignContext and specify the RSA PrivateKey and
         // location of the resulting XMLSignature's parent element
         DOMSignContext dsc = new DOMSignContext(
@@ -132,26 +136,12 @@ public class SignXML {
                 doc.getFirstChild()
         );
         ((Element) afterNode).setIdAttribute("Id", true);
-        //dsc.setIdAttributeNS((Element)node, "http://ekuatia.set.gov.py/sifen/xsd/DE_v150.xsd", "Id");
-        
-        // Adds <Signature> tag before a specific tag inside XML - with or without namespace
- 		/*
- 		Node assertionTag = doc.getElementsByTagName("saml2:Assertion").item(0);
- 		Node afterTag = doc.getElementsByTagName("saml2:Subject").item(0);
- 		DOMSignContext dsc = new DOMSignContext(key, assertionTag, afterTag);
- 		dsc.setDefaultNamespacePrefix("ds");
- 		*/
         
         // Create the XMLSignature (but don't sign it yet)
         XMLSignature signature = sigFactory.newXMLSignature(si, keyInfo);
 
         // Marshal, generate (and sign) the enveloped signature
         signature.sign(dsc);
-        
-        
-        
-        
-        
         
         ByteArrayOutputStream output = new ByteArrayOutputStream();
 		TransformerFactory.newInstance()
@@ -161,13 +151,6 @@ public class SignXML {
 		String rawSignedXml = new String(output.toByteArray());
 		
 		System.out.println(rawSignedXml);
-		
-		//SignedXml xml = new SignedXml(rawSignedXml);
-		//return xml;
-        //String retorno = new String(signature.getSignatureValue().getValue());
-        //System.out.println(retorno);
-        //System.out.println(si.);
+
     }
-
-
 }
