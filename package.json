@@ -5,15 +5,15 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc && copyfiles --up 1 src/**/*.class dist",
-    "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
+    "format": "prettier --write \"src/**/*.ts\"",
     "lint": "tslint -p tsconfig.json",
     "prepare": "npm run build",
     "prepublish": "",
-    "postpublish": "git push origin --tags",
+    "postpublish": "",
     "prepublishOnly": "",
     "preversion": "",
     "version": "npm run format && git add -A src",
-    "postversion": "git push origin --tags"
+    "postversion": "git push && git push origin --tags"
   },
   "repository": {
     "type": "git",
