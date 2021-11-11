@@ -97,17 +97,20 @@ class XMLDsig {
             
             findJavaHome({allowJre: true}, (err: any, java8Path: any) => {
                 if(err)return console.log(err);
-                console.log("resultado de java8Path", java8Path);
+            
 
                 //Comentar esta linea al llevar a Produccion, por que aqui trae java 6
-                java8Path = `"C:\\Program Files\\Java\\jdk1.8.0_221\\bin\\java"`;
-            
-                const classPath = '-classpath ' + __dirname + ' SignXML';
+                if (process.env.java8_home) {
+                    //java8Path = `"C:\\Program Files\\Java\\jdk1.8.0_221\\bin\\java"`;
+                    java8Path = `${process.env.java8_home}`;
+                }
+                
+                const classPath = '' + __dirname + '';
                 const tmpXMLToSign = '' + __dirname + '/xml_sign_temp.xml';
     
                 fs.writeFileSync(tmpXMLToSign, xml, {encoding: 'utf8'});
     
-                exec(`${java8Path} -Dfile.encoding=IBM850 ${classPath} ${tmpXMLToSign} ${this.file} ${this.passphase}`, {encoding: "UTF-8"}, (error: any, stdout: any, stderr: any) => {
+                exec(`"${java8Path}" -Dfile.encoding=IBM850 -classpath "${classPath}" SignXML "${tmpXMLToSign}" "${this.file}" "${this.passphase}"`, {encoding: "UTF-8"}, (error: any, stdout: any, stderr: any) => {
                     if (error) {
                         reject(error);
                     }
