@@ -162,7 +162,6 @@ class XMLDsig {
     let cert = Buffer.from(token.getCertificate() + "", "utf8");
 
     let keysS = await this.importKey(token.getPrivateKey() + "");
-    console.log("keysS", keysS);
 
     let signature = new xmldsigjs.SignedXml();
 
@@ -215,7 +214,6 @@ class XMLDsig {
 
     token.clean();
 
-    console.log("signed", xmlSigned);
     return xmlSigned;
   }
 
@@ -254,7 +252,6 @@ class XMLDsig {
     //xmlToDigest = xmlToDigest.replace('</DE>', '');
     //xmlToDigest = xmlToDigest.split('\n').slice(1).join('\n');
 
-    console.log("xmlToDigest b", xmlToDigest);
     const hash = this.digest(xmlToDigest);
 
     this.signedInfo.Reference.DigestValue = hash;
@@ -270,7 +267,6 @@ class XMLDsig {
     //signedInfoXML = signedInfoXML.split('\n').slice(1).join('\n');
     xmlToDigest = await this.canonicalizar(signedInfoXML);
 
-    console.log("xmlToDigest", xmlToDigest);
     let signature = this.signatureValue(signedInfoXML);
 
     xmlDocumentJSON["rDE"].Signature = {
@@ -289,7 +285,6 @@ class XMLDsig {
 
     var xmlSigned = builder.buildObject(xmlDocumentJSON);
     //xmlSigned = await this.normalizeXML(xmlSigned);
-    console.log("signed", xmlSigned);
     token.clean();
 
     return xmlSigned;
@@ -302,17 +297,7 @@ class XMLDsig {
       let canonicaliser = c14n.createCanonicaliser(
         "http://www.w3.org/2001/10/xml-exc-c14n#"
       );
-      //let canonicaliser = c14n.createCanonicaliser("http://www.w3.org/2001/10/xml-exc-c14n#WithComments");
-
-      /*console.log("canonicalising with algorithm: " + canonicaliser.name());
-            console.log("");
-            
-            console.log("INPUT");
-            console.log("");
-            //console.log(xmlData);
-            
-            console.log("");
-            */
+ 
       canonicaliser.canonicalise(
         document.documentElement,
         function (err: any, res: any) {
@@ -320,8 +305,6 @@ class XMLDsig {
             reject(err);
           }
 
-          /*console.log("RESULT");
-                console.log("");*/
           resolve(res);
         }
       );
@@ -393,7 +376,6 @@ class XMLDsig {
     b64Lines = b64Lines.replace("-----BEGIN RSA PRIVATE KEY-----", "");
     b64Lines = b64Lines.replace("-----END RSA PRIVATE KEY-----", "");
 
-    console.log(b64Lines);
     return this.base64ToArrayBuffer(b64Lines);
   }
 
