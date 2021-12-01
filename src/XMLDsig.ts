@@ -140,6 +140,62 @@ class XMLDsig {
     });
   }
 
+
+  /**
+   * Firma el XML del Evento con Java
+   * @param xml
+   * @param tag
+   * @returns
+   */
+    async signEvento(xml: string, tag: any) {
+    return new Promise(async (resolve, reject) => {
+      //console.log("A firmar", xml);
+      //xml = await this.asignarFechaFirma(xml);
+
+      findJavaHome({ allowJre: true }, (err: any, java8Path: any) => {
+        if (err) return console.log(err);
+
+        //Comentar esta linea al llevar a Produccion, por que aqui trae java 6
+        if (process.env.java8_home) {
+          //java8Path = `"C:\\Program Files\\Java\\jdk1.8.0_221\\bin\\java"`;
+          java8Path = `${process.env.java8_home}`;
+        }
+
+        const classPath = "" + __dirname + "";
+        const tmpXMLToSign = "" + __dirname + "/xml_sign_temp.xml";
+
+        fs.writeFileSync(tmpXMLToSign, xml, { encoding: "utf8" });
+
+        exec(
+          `"${java8Path}" -Dfile.encoding=IBM850 -classpath "${classPath}" SignXMLEvento "${tmpXMLToSign}" "${this.file}" "${this.passphase}"`,
+          { encoding: "UTF-8" },
+          (error: any, stdout: any, stderr: any) => {
+            if (error) {
+              reject(error);
+            }
+            if (stderr) {
+              reject(stderr);
+            }
+
+            try {
+              fs.unlinkSync(tmpXMLToSign);
+              //file removed
+            } catch (err) {
+              console.error(err);
+            }
+
+            //console.log(`signedXML: ${stdout}`);
+
+            //resolve(Buffer.from(`${stdout}`,'utf8').toString());
+            //fs.writeFileSync(tmpXMLToSign + ".result.xml", `${stdout}`, {encoding: 'utf8'});
+            //let resultXML = fs.readFileSync(tmpXMLToSign + ".result.xml", {encoding: 'utf8'});
+            resolve(`${stdout}`);
+          }
+        );
+      });
+    });
+  }
+  
   async signDocument2(xml: string, tag: any) {
     xmldsigjs.Application.setEngine(
       "OpenSSL",
