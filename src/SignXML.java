@@ -127,7 +127,7 @@ public class SignXML {
         // Create a KeyInfo and add the KeyValue to it
         KeyInfo keyInfo = keyInfoFactory.newKeyInfo(Collections.singletonList(xd));
 
-        Node node = doc.getElementsByTagName("rDE").item(0);
+        //-->no se usa Node node = doc.getElementsByTagName("rDE").item(0);
 
         // Create a DOMSignContext and specify the RSA PrivateKey and
         // location of the resulting XMLSignature's parent element

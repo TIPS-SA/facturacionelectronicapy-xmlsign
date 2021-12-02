@@ -127,13 +127,17 @@ public class SignXMLEvento {
         // Create a KeyInfo and add the KeyValue to it
         KeyInfo keyInfo = keyInfoFactory.newKeyInfo(Collections.singletonList(xd));
 
-        Node node = doc.getElementsByTagName("rGesEve").item(0);
+        //-->no se usa Node node = doc.getElementsByTagName("rGesEve").item(0);
 
         // Create a DOMSignContext and specify the RSA PrivateKey and
         // location of the resulting XMLSignature's parent element
-        DOMSignContext dsc = new DOMSignContext(
+        /*DOMSignContext dsc = new DOMSignContext(
                 privateKey,
                 doc.getFirstChild()
+        );*/
+        DOMSignContext dsc = new DOMSignContext(
+                privateKey,
+                doc.getElementsByTagName("rGesEve").item(0)
         );
         ((Element) afterNode).setIdAttribute("Id", true);
         
