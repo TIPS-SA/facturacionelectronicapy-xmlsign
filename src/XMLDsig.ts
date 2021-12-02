@@ -140,14 +140,13 @@ class XMLDsig {
     });
   }
 
-
   /**
    * Firma el XML del Evento con Java
    * @param xml
    * @param tag
    * @returns
    */
-    async signEvento(xml: string, tag: any) {
+  async signEvento(xml: string, tag: any) {
     return new Promise(async (resolve, reject) => {
       //console.log("A firmar", xml);
       //xml = await this.asignarFechaFirma(xml);
@@ -195,7 +194,7 @@ class XMLDsig {
       });
     });
   }
-  
+
   async signDocument2(xml: string, tag: any) {
     xmldsigjs.Application.setEngine(
       "OpenSSL",
@@ -353,7 +352,7 @@ class XMLDsig {
       let canonicaliser = c14n.createCanonicaliser(
         "http://www.w3.org/2001/10/xml-exc-c14n#"
       );
- 
+
       canonicaliser.canonicalise(
         document.documentElement,
         function (err: any, res: any) {
