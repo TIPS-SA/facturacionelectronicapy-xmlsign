@@ -436,7 +436,7 @@ class XMLDsig {
     return this.base64ToArrayBuffer(b64Lines);
   }
 
-/*  async importKey(yourprivatekey: string) {
+  /*  async importKey(yourprivatekey: string) {
     let crypto = new (await import("node-webcrypto-ossl")).Crypto();
     //window.crypto.subtle.importKey(
     return crypto.subtle.importKey(
