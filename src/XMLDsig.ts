@@ -1,26 +1,26 @@
 //import convert from 'xml-js';
 import xml2js from "xml2js";
 
-import sha256 from "crypto-js/sha256";
-import Base64 from "crypto-js/enc-base64";
+//import sha256 from "crypto-js/sha256";
+//import Base64 from "crypto-js/enc-base64";
 import token from "./PKCS12";
 import findJavaHome from "find-java-home";
 
 //import crypto from 'crypto';
 //const { subtle } = require('crypto').webcrypto;
 const { exec } = require("child_process");
-var xmldom = require("xmldom");
+//var xmldom = require("xmldom");
 var fs = require("fs");
-var c14n = require("xml-c14n")();
+//var c14n = require("xml-c14n")();
 
-var atob = require("atob");
+//var atob = require("atob");
 
-var xmldsigjs = require("xmldsigjs");
+//var xmldsigjs = require("xmldsigjs");
 //var WebCrypto = require("node-webcrypto-ossl");
 //xmldsigjs.Application.setEngine("OpenSSL", new WebCrypto());
 //xmldsigjs.Application.setEngine("OpenSSL", new (await import("node-webcrypto-ossl")).Crypto)
 //var SignedXml = require('xml-crypto').SignedXml;
-import { SignedXml, FileKeyInfo } from "xml-crypto";
+//import { SignedXml, FileKeyInfo } from "xml-crypto";
 
 class XMLDsig {
   private file: any;
@@ -195,7 +195,7 @@ class XMLDsig {
     });
   }
 
-  async signDocument2(xml: string, tag: any) {
+  /*async signDocument2(xml: string, tag: any) {
     xmldsigjs.Application.setEngine(
       "OpenSSL",
       new (await import("node-webcrypto-ossl")).Crypto()
@@ -229,9 +229,9 @@ class XMLDsig {
       .then(() => {
         console.log("sig.tostring...", signature.toString());
       });
-  }
+  }*/
 
-  async signDocument3(xml: string, tag: any) {
+  /*async signDocument3(xml: string, tag: any) {
     //var option = {implicitTransforms: ["http://www.w3.org/2000/09/xmldsig#enveloped-signature", "http://www.w3.org/2001/10/xml-exc-c14n#"]}
     var option = {
       implicitTransforms: ["http://www.w3.org/2001/10/xml-exc-c14n#"],
@@ -270,9 +270,9 @@ class XMLDsig {
     token.clean();
 
     return xmlSigned;
-  }
+  }*/
 
-  async signDocument_El_que_que_funcionar(xml: string, tag: any) {
+  /*async signDocument_El_que_que_funcionar(xml: string, tag: any) {
     var parser = new xml2js.Parser({ explicitArray: false });
     const xmlDocumentJSON: any = await parser.parseStringPromise(xml);
 
@@ -343,8 +343,9 @@ class XMLDsig {
     token.clean();
 
     return xmlSigned;
-  }
+  }*/
 
+  /*
   canonicalizar(xml: string): Promise<string> {
     return new Promise((resolve, reject) => {
       let document = new xmldom.DOMParser().parseFromString(xml);
@@ -364,7 +365,7 @@ class XMLDsig {
         }
       );
     });
-  }
+  }*/
   /*digest(xml: string) {
         var sha256 = crypto.createHash('sha256');
 
@@ -372,11 +373,12 @@ class XMLDsig {
         return sha256.digest('base64');
     }*/
 
+  /* no usado
   digest(xml: string) {
     const hashDigest = sha256(xml);
     const hmacDigest = Base64.stringify(hashDigest);
     return hmacDigest;
-  }
+  }*/
 
   signatureValue(xml: string) {
     let privateKey = token.getPrivateKey();
@@ -434,7 +436,7 @@ class XMLDsig {
     return this.base64ToArrayBuffer(b64Lines);
   }
 
-  async importKey(yourprivatekey: string) {
+/*  async importKey(yourprivatekey: string) {
     let crypto = new (await import("node-webcrypto-ossl")).Crypto();
     //window.crypto.subtle.importKey(
     return crypto.subtle.importKey(
@@ -447,7 +449,7 @@ class XMLDsig {
       true,
       ["decrypt"]
     );
-  }
+  }*/
 
   private async asignarFechaFirma(xml: string) {
     var parser = new xml2js.Parser({ explicitArray: false });
