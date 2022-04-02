@@ -97,7 +97,7 @@ class XMLDsig {
       //xml = await this.asignarFechaFirma(xml);
 
       findJavaHome({ allowJre: true }, (err: any, java8Path: any) => {
-        java8Path += '/bin/java';
+        java8Path += "/bin/java";
         if (err) return console.log(err);
 
         //Comentar esta linea al llevar a Produccion, por que aqui trae java 6
