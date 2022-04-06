@@ -107,7 +107,8 @@ class XMLDsig {
         }
 
         const classPath = "" + __dirname + "";
-        const tmpXMLToSign = "" + __dirname + "/xml_sign_temp.xml";
+        //const tmpXMLToSign = "" + __dirname + "/xml_sign_temp.xml";
+        const tmpXMLToSign = "" + __dirname + "/xml_sign_temp_" + Math.round(Math.random() * 999999) + ".xml";
 
         fs.writeFileSync(tmpXMLToSign, xml, { encoding: "utf8" });
 
