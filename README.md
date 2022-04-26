@@ -24,5 +24,5 @@ xmlsign
 
 ```
 
-Para saber como generar el Archivo XML visita éste proyecto de Git: 
+Para saber como generar el Archivo XML visita éste proyecto de Git visitar: 
 https://github.com/marcosjara/facturacionelectronicapy-xmlgen
