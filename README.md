@@ -26,3 +26,11 @@ xmlsign
 
 Para saber como generar el Archivo XML visita éste proyecto de Git: 
 https://github.com/marcosjara/facturacionelectronicapy-xmlgen
+
+
+## Todos los proyectos
+[Generación de XML](https://www.npmjs.com/package/facturacionelectronicapy-xmlgen)<br/>
+[Firma de XML](https://www.npmjs.com/package/facturacionelectronicapy-xmlsign)<br/>
+[Generación de QR](https://www.npmjs.com/package/facturacionelectronicapy-qrgen)<br/>
+[API de la SET](https://www.npmjs.com/package/facturacionelectronicapy-setapi)<br/>
+[Generación KUDE](https://www.npmjs.com/package/facturacionelectronicapy-kude)<br/>
