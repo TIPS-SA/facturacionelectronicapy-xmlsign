@@ -129,7 +129,10 @@ class XMLDsig {
             }
 
             try {
-              fs.unlinkSync(tmpXMLToSign);
+              // Justo Gonzalez - consulta primero si existe, generabar Error: ENOENT: no such file or directory, unlink 
+              if (tmpXMLToSign) {
+                fs.unlinkSync(tmpXMLToSign);
+              }
               //file removed
             } catch (err) {
               console.error(err);
@@ -185,7 +188,10 @@ class XMLDsig {
             }
 
             try {
-              fs.unlinkSync(tmpXMLToSign);
+            // Justo Gonzalez - consulta primero si existe, generabar Error: ENOENT: no such file or directory, unlink 
+              if (tmpXMLToSign) {
+                fs.unlinkSync(tmpXMLToSign);
+              }
               //file removed
             } catch (err) {
               console.error(err);
