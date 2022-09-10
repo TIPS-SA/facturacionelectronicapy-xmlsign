@@ -13,6 +13,12 @@ class DESign {
     return dsig.signEvento(xml, "DE");
     //});
   };
+  signXMLRecibo = (xml: string, file: any, password: any): Promise<any> => {
+    //return new Promise((resolve, reject) => {
+    dsig.openFile(file, password);
+    return dsig.signDocument(xml, "recibo");
+    //});
+  };
 }
 
 export default new DESign();

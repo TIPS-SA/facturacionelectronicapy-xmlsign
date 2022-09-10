@@ -118,7 +118,7 @@ class XMLDsig {
         fs.writeFileSync(tmpXMLToSign, xml, { encoding: "utf8" });
 
         exec(
-          `"${java8Path}" -Dfile.encoding=IBM850 -classpath "${classPath}" SignXML "${tmpXMLToSign}" "${this.file}" "${this.passphase}"`,
+          `"${java8Path}" -Dfile.encoding=IBM850 -classpath "${classPath}" SignXML "${tmpXMLToSign}" "${this.file}" "${this.passphase}" "${tag}"`,
           { encoding: "UTF-8" },
           (error: any, stdout: any, stderr: any) => {
             if (error) {

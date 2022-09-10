@@ -73,6 +73,7 @@ public class SignXML {
 		Document doc = (Document) builder.parse(new File(args[0]));
 
     	String passphase = args[2];
+    	String tagToSign = args[4];
 
         p12.load(new FileInputStream(args[1]), passphase.toCharArray());
 
@@ -92,7 +93,7 @@ public class SignXML {
 		Transform c14NEXCTransform = sigFactory.newTransform(C14NEXC, (TransformParameterSpec) null);
 		List<Transform> transforms = Arrays.asList(envelopedTransform, c14NEXCTransform);
 		
-        Node afterNode = doc.getElementsByTagName("DE").item(0);
+        Node afterNode = doc.getElementsByTagName(tagToSign).item(0);
         String id = afterNode.getAttributes().getNamedItem("Id").getNodeValue();
 
         // Create a Reference to the enveloped document
