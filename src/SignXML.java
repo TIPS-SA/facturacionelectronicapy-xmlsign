@@ -73,7 +73,7 @@ public class SignXML {
 		Document doc = (Document) builder.parse(new File(args[0]));
 
     	String passphase = args[2];
-    	String tagToSign = args[4];
+    	String tagToSign = args[3] != null ? args[3] : "DE";
 
         p12.load(new FileInputStream(args[1]), passphase.toCharArray());
 
