@@ -153,72 +153,73 @@ class XMLDsig {
    * @param tag
    * @returns
    */
-     async signDocuments(xmls: Array<any>, tag: any) {
-      return new Promise(async (resolve, reject) => {
-        //console.log("A firmar", xml);
-  
-        findJavaHome({ allowJre: true }, (err: any, java8Path: any) => {
-          java8Path += "/bin/java";
-          if (err) return console.log(err);
-  
-          //Comentar esta linea al llevar a Produccion, por que aqui trae java 6
-          if (process.env.java8_home) {
-            //java8Path = `"C:\\Program Files\\Java\\jdk1.8.0_221\\bin\\java"`;
-            java8Path = `${process.env.java8_home}`;
-          }
-  
-          const classPath = "" + __dirname + "";
-          //const tmpXMLToSign = "" + __dirname + "/xml_sign_temp.xml";
-          const arrayNameFiles = new Array();
+  async signDocuments(xmls: Array<any>, tag: any) {
+    return new Promise(async (resolve, reject) => {
+      //console.log("A firmar", xml);
 
-          for (let i = 0; i < xmls.length; i++) {
-            const xml = xmls[i];
+      findJavaHome({ allowJre: true }, (err: any, java8Path: any) => {
+        java8Path += "/bin/java";
+        if (err) return console.log(err);
 
-            const tmpXMLToSign =
+        //Comentar esta linea al llevar a Produccion, por que aqui trae java 6
+        if (process.env.java8_home) {
+          //java8Path = `"C:\\Program Files\\Java\\jdk1.8.0_221\\bin\\java"`;
+          java8Path = `${process.env.java8_home}`;
+        }
+
+        const classPath = "" + __dirname + "";
+        //const tmpXMLToSign = "" + __dirname + "/xml_sign_temp.xml";
+        const arrayNameFiles = new Array();
+
+        for (let i = 0; i < xmls.length; i++) {
+          const xml = xmls[i];
+
+          const tmpXMLToSign =
             "" +
             __dirname +
             "/xml_sign_temp_" +
             Math.round(Math.random() * 999999) +
             ".xml";
-  
-            fs.writeFileSync(tmpXMLToSign, xml, { encoding: "utf8" });
 
-            arrayNameFiles.push(tmpXMLToSign);
-          }
+          fs.writeFileSync(tmpXMLToSign, xml, { encoding: "utf8" });
 
-          
-          exec(
-            `"${java8Path}" -Dfile.encoding=IBM850 -classpath "${classPath}" SignXMLFiles "${arrayNameFiles.join(',')}" "${this.file}" "${this.passphase}" "${tag}"`,
-            { encoding: "UTF-8" },
-            (error: any, stdout: any, stderr: any) => {
-              if (error) {
-                reject(error);
-              }
-              if (stderr) {
-                reject(stderr);
-              }
-  
-              try {
-                for (let i = 0; i < arrayNameFiles.length; i++) {
-                  const nameFile = arrayNameFiles[i];
-                  fs.unlinkSync(nameFile);
-                }
-                //file removed
-              } catch (err) {
-                console.error(err);
-              }
-  
-              //console.log(`signedXML: ${stdout}`);
-  
-              //resolve(Buffer.from(`${stdout}`,'utf8').toString());
-              //fs.writeFileSync(tmpXMLToSign + ".result.xml", `${stdout}`, {encoding: 'utf8'});
-              //let resultXML = fs.readFileSync(tmpXMLToSign + ".result.xml", {encoding: 'utf8'});
-              resolve(`${stdout}`);
+          arrayNameFiles.push(tmpXMLToSign);
+        }
+
+        exec(
+          `"${java8Path}" -Dfile.encoding=IBM850 -classpath "${classPath}" SignXMLFiles "${arrayNameFiles.join(
+            ","
+          )}" "${this.file}" "${this.passphase}" "${tag}"`,
+          { encoding: "UTF-8" },
+          (error: any, stdout: any, stderr: any) => {
+            if (error) {
+              reject(error);
             }
-          );
-        });
+            if (stderr) {
+              reject(stderr);
+            }
+
+            try {
+              for (let i = 0; i < arrayNameFiles.length; i++) {
+                const nameFile = arrayNameFiles[i];
+                fs.unlinkSync(nameFile);
+              }
+              //file removed
+            } catch (err) {
+              console.error(err);
+            }
+
+            //console.log(`signedXML: ${stdout}`);
+
+            //resolve(Buffer.from(`${stdout}`,'utf8').toString());
+            //fs.writeFileSync(tmpXMLToSign + ".result.xml", `${stdout}`, {encoding: 'utf8'});
+            //let resultXML = fs.readFileSync(tmpXMLToSign + ".result.xml", {encoding: 'utf8'});
+            resolve(`${stdout}`);
+          }
+        );
       });
-    }
+    });
+  }
 
   /**
    * Firma el XML del Evento con Java
