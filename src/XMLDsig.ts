@@ -566,6 +566,55 @@ class XMLDsig {
     while (s.length < size) s = "0" + s;
     return s;
   }
+
+
+  /**
+   * Firma con Java, retornando el documento firmado en el buffer de salida
+   * @param xml
+   * @param tag
+   * @returns
+   */
+  async getExpiration() {
+    return new Promise(async (resolve, reject) => {
+      //console.log("A firmar", xml);
+      //xml = await this.asignarFechaFirma(xml);
+
+      findJavaHome({ allowJre: true }, (err: any, java8Path: any) => {
+        java8Path += "/bin/java";
+        if (err) return console.log(err);
+
+        //Comentar esta linea al llevar a Produccion, por que aqui trae java 6
+        if (process.env.java8_home) {
+          //java8Path = `"C:\\Program Files\\Java\\jdk1.8.0_221\\bin\\java"`;
+          java8Path = `${process.env.java8_home}`;
+        }
+
+        const classPath = "" + __dirname + "";
+       
+        exec(
+          `"${java8Path}" -Dfile.encoding=IBM850 -classpath "${classPath}" CertExpiration "${this.file}" "${this.passphase}"`,
+          { encoding: "UTF-8" },
+          (error: any, stdout: any, stderr: any) => {
+            if (error) {
+              reject(error);
+            }
+            if (stderr) {
+              reject(stderr);
+            }
+
+            try {
+              //file removed
+            } catch (err) {
+              console.error(err);
+            }
+
+            resolve(`${stdout}`);
+          }
+        );
+      });
+    });
+  }
+
 }
 
 export default new XMLDsig();

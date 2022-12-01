@@ -25,6 +25,12 @@ class DESign {
     return dsig.signDocument(xml, "recibo");
     //});
   };
+  getExpiration = (file: any, password: any): Promise<any> => {
+    //return new Promise((resolve, reject) => {
+    dsig.openFile(file, password);
+    return dsig.getExpiration();
+    //});
+  };
 }
 
 export default new DESign();
