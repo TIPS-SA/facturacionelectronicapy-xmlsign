@@ -567,7 +567,6 @@ class XMLDsig {
     return s;
   }
 
-
   /**
    * Firma con Java, retornando el documento firmado en el buffer de salida
    * @param xml
@@ -590,7 +589,7 @@ class XMLDsig {
         }
 
         const classPath = "" + __dirname + "";
-       
+
         exec(
           `"${java8Path}" -Dfile.encoding=IBM850 -classpath "${classPath}" CertExpiration "${this.file}" "${this.passphase}"`,
           { encoding: "UTF-8" },
@@ -614,7 +613,6 @@ class XMLDsig {
       });
     });
   }
-
 }
 
 export default new XMLDsig();
