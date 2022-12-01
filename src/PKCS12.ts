@@ -6,8 +6,13 @@ class PKCS12 {
   private p12: any;
 
   openCertificate(file: string) {
-    const pkcs12 = fs.readFileSync(file);
-    this.p12Asn1 = forge.asn1.fromDer(pkcs12.toString("binary"));
+    if (fs.existsSync(file)) {
+      const pkcs12 = fs.readFileSync(file);
+      this.p12Asn1 = forge.asn1.fromDer(pkcs12.toString("binary"));
+    } else {
+        throw Error (file + " no encontrado!");
+    }
+    
   }
 
   openFile(file: string, passphase: string) {
