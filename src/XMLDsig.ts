@@ -192,11 +192,24 @@ class XMLDsig {
           )}" "${this.file}" "${this.passphase}" "${tag}"`,
           { encoding: "UTF-8" },
           (error: any, stdout: any, stderr: any) => {
+            let stdOutProcesed = stdout;
+            /*console.log("error", error);
+            console.log("stdout", stdout);
+            console.log("stderr", stderr);
+            */
+            if (stdOutProcesed.includes("_SEPARATOR_")) {
+              //Por si haya algun log que quedo en la colita, entonces elimina ese
+              stdOutProcesed = stdout.substring(0, stdout.lastIndexOf("_SEPARATOR_")+11);
+            }
             if (error) {
-              reject(error);
+              if (!stdOutProcesed.includes("_SEPARATOR_")) {
+                reject(error);
+              }              
             }
             if (stderr) {
-              reject(stderr);
+              if (!stdOutProcesed.includes("_SEPARATOR_")) {
+                reject(stderr);
+              }
             }
 
             try {
@@ -214,7 +227,7 @@ class XMLDsig {
             //resolve(Buffer.from(`${stdout}`,'utf8').toString());
             //fs.writeFileSync(tmpXMLToSign + ".result.xml", `${stdout}`, {encoding: 'utf8'});
             //let resultXML = fs.readFileSync(tmpXMLToSign + ".result.xml", {encoding: 'utf8'});
-            resolve(`${stdout}`);
+            resolve(`${stdOutProcesed}`);
           }
         );
       });
