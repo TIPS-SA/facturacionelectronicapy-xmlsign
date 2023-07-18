@@ -199,12 +199,15 @@ class XMLDsig {
             */
             if (stdOutProcesed.includes("_SEPARATOR_")) {
               //Por si haya algun log que quedo en la colita, entonces elimina ese
-              stdOutProcesed = stdout.substring(0, stdout.lastIndexOf("_SEPARATOR_")+11);
+              stdOutProcesed = stdout.substring(
+                0,
+                stdout.lastIndexOf("_SEPARATOR_") + 11
+              );
             }
             if (error) {
               if (!stdOutProcesed.includes("_SEPARATOR_")) {
                 reject(error);
-              }              
+              }
             }
             if (stderr) {
               if (!stdOutProcesed.includes("_SEPARATOR_")) {
