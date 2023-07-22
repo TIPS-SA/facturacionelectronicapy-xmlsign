@@ -129,8 +129,10 @@ class XMLDsig {
             }
 
             try {
-              fs.unlinkSync(tmpXMLToSign);
-              //file removed
+             if (tmpXMLToSign) {
+                  //file removed, if exists
+                fs.unlinkSync(tmpXMLToSign);
+             }
             } catch (err) {
               console.error(err);
             }
