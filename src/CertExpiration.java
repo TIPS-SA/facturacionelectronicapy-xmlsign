@@ -32,7 +32,7 @@ public class CertExpiration {
         Date notAfter = cert.getNotAfter();
         Date notBefore = cert.getNotBefore();
         
-        System.out.print(sdf.format(notBefore) + " " + sdf.format(notAfter));
+        System.out.print("{\"notBefore\" : \"" + sdf.format(notBefore) + "\", \"notAfter\" : \"" + sdf.format(notAfter) + "\"}");
 		
     }
 
