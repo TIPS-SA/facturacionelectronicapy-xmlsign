@@ -5,6 +5,8 @@ import xml2js from "xml2js";
 //import Base64 from "crypto-js/enc-base64";
 import token from "./PKCS12";
 import findJavaHome from "find-java-home";
+import xmlsign from "./XMLSign";
+
 
 //import crypto from 'crypto';
 //const { subtle } = require('crypto').webcrypto;
@@ -629,6 +631,19 @@ class XMLDsig {
       });
     });
   }
+
+
+  /**
+   * Firma con NODEJS, varios documentos al mismo tiempo
+   * @param xml
+   * @param tag
+   * @returns
+   * https://tutoriales.adsib.gob.bo/_08/index.html
+   */
+  async signDocumentsWithNodeJS(xmls: Array<any>, tag: any, file: any, password: any) {
+    return xmlsign.signWithNode(xmls, tag, file, password);
+  }
+
 }
 
 export default new XMLDsig();
