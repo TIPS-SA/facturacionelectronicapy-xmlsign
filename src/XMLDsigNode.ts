@@ -1,12 +1,12 @@
-const Dsig = require('facturacionelectronicapy-pkcs12');
+const pkcs12 = require('facturacionelectronicapy-pkcs12');
 
-class XMLSign {
+class XMLDsigNode {
   
-  public async signWithNode(xmls: Array<any>, tag: any, file: any, password: any) {
+  public async signDocument(xmls: Array<any>, tag: any, file: any, password: any) {
     return new Promise(async (resolve, reject) => {
       try {
           var separator = '_SEPARATOR_';
-          var dsig = new Dsig(file);
+          var dsig = new pkcs12(file);
           dsig.openSession(password);
 
           let xmlFirmado = '';
@@ -30,4 +30,4 @@ class XMLSign {
   }
 }
 
-export default new XMLSign();
+export default new XMLDsigNode();

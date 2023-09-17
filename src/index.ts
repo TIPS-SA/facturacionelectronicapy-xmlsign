@@ -1,34 +1,35 @@
-import dsig from "./XMLDsig";
+import dsigJava from "./XMLDsigJava";
+import dsigNode from "./XMLDsigNode";
 
 class DESign {
   signXML = (xml: string, file: any, password: any): Promise<any> => {
-    dsig.openFile(file, password);
-    //return dsig.signDocument(xml, "DE");
-    return dsig.signDocumentsWithNodeJS([xml], "DE", file, password);
+    return dsigJava.signDocument(xml, "DE", file, password);
+    //return dsigNode.signDocument([xml], "DE", file, password);
 
   };
   signXMLFiles = (xmls: Array<any>, file: any, password: any): Promise<any> => {
-    dsig.openFile(file, password);
-    //return dsig.signDocuments(xmls, "DE");
-    return dsig.signDocumentsWithNodeJS(xmls, "DE", file, password);
+    return dsigJava.signDocuments(xmls, "DE", file, password);
+    //return dsigNode.signDocument(xmls, "DE", file, password);
+  };
+
+  signXMLFilesNode = (xmls: Array<any>, file: any, password: any): Promise<any> => {
+    //return dsigJava.signDocuments(xmls, "DE", file, password);
+    return dsigNode.signDocument(xmls, "DE", file, password);
   };
 
   signXMLEvento = (xml: string, file: any, password: any): Promise<any> => {
-    dsig.openFile(file, password);
-    //return dsig.signEvento(xml, "DE");
-    return dsig.signDocumentsWithNodeJS([xml], "DE", file, password);
+    return dsigJava.signEvento(xml, "rEve", file, password);
+    //return dsigNode.signDocument([xml], "DE", file, password);
   };
 
   signXMLRecibo = (xml: string, file: any, password: any): Promise<any> => {
-    dsig.openFile(file, password);
-    //return dsig.signDocument(xml, "recibo");
-    return dsig.signDocumentsWithNodeJS([xml], "DE", file, password);
+    return dsigJava.signDocument(xml, "recibo", file, password);
+    //return dsigNode.signDocument([xml], "DE", file, password);
 
   };
 
   getExpiration = (file: any, password: any): Promise<any> => {
-    dsig.openFile(file, password);
-    return dsig.getExpiration();
+    return dsigJava.getExpiration(file, password);
   };
 }
 
