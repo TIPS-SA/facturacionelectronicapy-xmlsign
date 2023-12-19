@@ -27,7 +27,7 @@ class XMLDsigNode {
           reject(e);
       } finally {
         if (dsig != null) {
-          dsig.closeSession();
+          //dsig.closeSession();
         }
       }
     });
