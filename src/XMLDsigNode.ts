@@ -4,6 +4,7 @@ class XMLDsigNode {
   
   public async signDocument(xmls: Array<any>, tag: any, file: any, password: any) {
     return new Promise(async (resolve, reject) => {
+      var dsig = null;
       try {
           /*var separator = '_SEPARATOR_';
           var dsig = new pkcs12(file);
@@ -25,7 +26,9 @@ class XMLDsigNode {
           console.error(e);
           reject(e);
       } finally {
+        if (dsig != null) {
           dsig.closeSession();
+        }
       }
     });
   }
