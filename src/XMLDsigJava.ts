@@ -4,7 +4,6 @@ const { exec } = require("child_process");
 var fs = require("fs");
 
 class XMLDsig {
-
   constructor() {}
 
   /**
@@ -15,7 +14,6 @@ class XMLDsig {
    */
   async signDocument(xml: string, tag: any, file: any, passphase: any) {
     return new Promise(async (resolve, reject) => {
-
       findJavaHome({ allowJre: true }, (err: any, java8Path: any) => {
         java8Path += "/bin/java";
         if (err) return console.log(err);
@@ -41,36 +39,34 @@ class XMLDsig {
           `"${java8Path}" -Dfile.encoding=IBM850 -classpath "${classPath}" SignXML "${tmpXMLToSign}" "${file}" "${passphase}" "${tag}"`,
           { encoding: "UTF-8" },
           (error: any, stdout: any, stderr: any) => {
-
             let entro = 0;
-            if (entro == 0) { //Evita hacer 2 veces reject
+            if (entro == 0) {
+              //Evita hacer 2 veces reject
               if (stderr) {
-                entro ++;  
+                entro++;
 
                 console.log(stderr.cmd);
                 stderr.code = stderr.killed = stderr.signal = stderr.cmd = null;
-                
+
                 reject(stderr);
-              }  
+              }
             }
 
-            if (entro == 0) { //Evita hacer 2 veces reject
+            if (entro == 0) {
+              //Evita hacer 2 veces reject
               if (error) {
-                entro ++;  
+                entro++;
                 console.log(error.cmd);
                 error.code = error.killed = error.signal = error.cmd = null;
-                
+
                 reject(error);
               }
             }
 
-
             try {
               fs.unlinkSync(tmpXMLToSign);
               //file removed
-            } catch (err) {
-              
-            }
+            } catch (err) {}
 
             //console.log(`signedXML: ${stdout}`);
 
@@ -84,8 +80,6 @@ class XMLDsig {
     });
   }
 
-
-  
   /**
    * Firma con Java, varios documentos al mismo tiempo
    * @param xml
@@ -147,18 +141,22 @@ class XMLDsig {
             if (entro == 0) {
               if (stderr) {
                 if (!stdOutProcesed.includes("_SEPARATOR_")) {
-                  entro ++;
+                  entro++;
                   console.log(stderr.cmd);
-                  stderr.code = stderr.killed = stderr.signal = stderr.cmd = null;
-  
+                  stderr.code =
+                    stderr.killed =
+                    stderr.signal =
+                    stderr.cmd =
+                      null;
+
                   reject(stderr);
                 }
-              }  
+              }
             }
             if (entro == 0) {
               if (error) {
                 if (!stdOutProcesed.includes("_SEPARATOR_")) {
-                  entro ++;
+                  entro++;
                   console.log(error.cmd);
                   error.code = error.killed = error.signal = error.cmd = null;
 
@@ -197,7 +195,6 @@ class XMLDsig {
    */
   async signEvento(xml: string, tag: any, file: any, passphase: any) {
     return new Promise(async (resolve, reject) => {
-
       findJavaHome({ allowJre: true }, (err: any, java8Path: any) => {
         java8Path += "/bin/java";
         if (err) return console.log(err);
@@ -251,7 +248,6 @@ class XMLDsig {
    */
   async getExpiration(file: any, passphase: any) {
     return new Promise(async (resolve, reject) => {
-
       findJavaHome({ allowJre: true }, (err: any, java8Path: any) => {
         java8Path += "/bin/java";
         if (err) return console.log(err);
