@@ -1,6 +1,16 @@
 //const pkcs12 = require('facturacionelectronicapy-pkcs12');
+const fs = require('fs');
+const { SignedXml, FileKeyInfo } = require('xml-crypto');
+const xmlbuilder = require('xmlbuilder');
+const xml2js = require('xml2js');
+//const pkcs12 = require('PKCS12');
+//import pkcs12 from "PKCS12";
+import forge from "node-forge";
 
 class XMLDsigNode {
+  private p12Asn1: any;
+  private p12: any;
+
   public async signDocument(
     xmls: Array<any>,
     tag: any,
@@ -10,21 +20,54 @@ class XMLDsigNode {
     return new Promise(async (resolve, reject) => {
       var dsig = null;
       try {
-        /*var separator = '_SEPARATOR_';
-          var dsig = new pkcs12(file);
-          dsig.openSession(password);
+        var separator = '_SEPARATOR_';
+          this.openFile(file, password);
+
+          let certificate:any = this.getCertificate();
+          
+          // Crear un objeto SignedXml
+
+          // Configurar la clave privada para firmar (ejemplo, deberías cargar tu propia clave privada)
 
           let xmlFirmado = '';
           for (let i = 0; i < xmls.length; i++) {
-            const xml = xmls[i];
-            xmlFirmado += dsig.computeSignature(xmls[0], tag) + separator;
+            const xmlString = xmls[i];
+
+            const sig = new SignedXml({
+              publicKey: this.getCertificate(),
+              privateKey: this.getPrivateKey(),
+              passphrase: password,
+              getKeyInfoContent: (publicKey: any, prefix: any) => {
+                const certContent = certificate.replace(/(?:\r\n|\r|\n)/g, ''); // Remover saltos de línea del certificado
+                return `<X509Data><X509Certificate>${certContent}</X509Certificate></X509Data>`;
+              }
+             }
+            );
+
+            const jsonXML = await xml2js.parseStringPromise(xmlString);
+            const idAtributo = jsonXML.rDE.DE[0].$.Id;
+
+            sig.addReference(/*"#" + idAtributo, */{
+              xpath: "//*[local-name()='DE']",
+              digestAlgorithm: "http://www.w3.org/2001/04/xmlenc#sha256",
+              transforms: ["http://www.w3.org/2000/09/xmldsig#enveloped-signature", "http://www.w3.org/2001/10/xml-exc-c14n#"],
+            });
+            sig.signatureAlgorithm = 'http://www.w3.org/2001/04/xmldsig-more#rsa-sha256'; // Algoritmo de firma RSA con SHA-256
+            sig.canonicalizationAlgorithm = "http://www.w3.org/2001/10/xml-exc-c14n#";
+
+            // Calcular la firma
+            sig.computeSignature(xmlString);
+
+            // Obtener la firma en formato XML
+            const xmlWithSignature = sig.getSignedXml();
+
+            xmlFirmado += xmlWithSignature + separator;
           }
 
           //Retira el ultimo _SEPARATOR_
           xmlFirmado = xmlFirmado.substring(0, xmlFirmado.length - separator.length);
 
-          resolve(xmlFirmado);*/
-        resolve("");
+          resolve(xmlFirmado);
       } catch (e) {
         console.error(e);
         reject(e);
@@ -35,6 +78,52 @@ class XMLDsigNode {
       }
     });
   }
+
+  openCertificate(file: string) {
+    if (fs.existsSync(file)) {
+      const pkcs12 = fs.readFileSync(file);
+      this.p12Asn1 = forge.asn1.fromDer(pkcs12.toString("binary"));
+    } else {
+      throw Error(file + " no encontrado!");
+    }
+  }  
+
+  openFile(file: string, passphase: string) {
+    this.openCertificate(file);
+
+    this.p12 = forge.pkcs12.pkcs12FromAsn1(this.p12Asn1, false, passphase);
+  }
+
+  cleanCertificate() {
+    this.p12 = undefined;
+  }
+
+  getCertificate() {
+    for (let i = 0; i < this.p12.safeContents.length; i++) {
+      if (this.p12.safeContents[i].safeBags[0].cert) {
+        const b64 = forge.pki.certificateToPem(
+          this.p12.safeContents[i].safeBags[0].cert
+        );
+        const l = b64.split("\n");
+        l.pop();
+        l.pop();
+        l[0] = "";
+        return l.join("\n");
+      }
+    }
+    return null;
+  }
+
+  getPrivateKey() {
+    for (let i = 0; i < this.p12.safeContents.length; i++) {
+      if (this.p12.safeContents[i].safeBags[0].key) {
+        return forge.pki.privateKeyToPem(
+          this.p12.safeContents[i].safeBags[0].key
+        );
+      }
+    }
+    return null;
+  }  
 }
 
 export default new XMLDsigNode();

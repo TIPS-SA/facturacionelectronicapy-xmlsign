@@ -41,7 +41,9 @@
     "copyfiles": "^2.4.1",
     "find-java-home": "^1.2.2",
     "node-forge": "^0.8.5",
+    "xml-crypto": "^6.0.0",
     "xml2js": "^0.4.23",
+    "xmlbuilder": "^15.1.1",
     "xmldom": "^0.6.0"
   },
   "devDependencies": {
