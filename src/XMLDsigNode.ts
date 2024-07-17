@@ -1,8 +1,8 @@
 //const pkcs12 = require('facturacionelectronicapy-pkcs12');
-const fs = require('fs');
-const { SignedXml, FileKeyInfo } = require('xml-crypto');
-const xmlbuilder = require('xmlbuilder');
-const xml2js = require('xml2js');
+const fs = require("fs");
+const { SignedXml, FileKeyInfo } = require("xml-crypto");
+const xmlbuilder = require("xmlbuilder");
+const xml2js = require("xml2js");
 //const pkcs12 = require('PKCS12');
 //import pkcs12 from "PKCS12";
 import forge from "node-forge";
@@ -20,54 +20,63 @@ class XMLDsigNode {
     return new Promise(async (resolve, reject) => {
       var dsig = null;
       try {
-        var separator = '_SEPARATOR_';
-          this.openFile(file, password);
+        var separator = "_SEPARATOR_";
+        this.openFile(file, password);
 
-          let certificate:any = this.getCertificate();
-          
-          // Crear un objeto SignedXml
+        let certificate: any = this.getCertificate();
 
-          // Configurar la clave privada para firmar (ejemplo, deberías cargar tu propia clave privada)
+        // Crear un objeto SignedXml
 
-          let xmlFirmado = '';
-          for (let i = 0; i < xmls.length; i++) {
-            const xmlString = xmls[i];
+        // Configurar la clave privada para firmar (ejemplo, deberías cargar tu propia clave privada)
 
-            const sig = new SignedXml({
-              publicKey: this.getCertificate(),
-              privateKey: this.getPrivateKey(),
-              passphrase: password,
-              getKeyInfoContent: (publicKey: any, prefix: any) => {
-                const certContent = certificate.replace(/(?:\r\n|\r|\n)/g, ''); // Remover saltos de línea del certificado
-                return `<X509Data><X509Certificate>${certContent}</X509Certificate></X509Data>`;
-              }
-             }
-            );
+        let xmlFirmado = "";
+        for (let i = 0; i < xmls.length; i++) {
+          const xmlString = xmls[i];
 
-            const jsonXML = await xml2js.parseStringPromise(xmlString);
-            const idAtributo = jsonXML.rDE.DE[0].$.Id;
+          const sig = new SignedXml({
+            publicKey: this.getCertificate(),
+            privateKey: this.getPrivateKey(),
+            passphrase: password,
+            getKeyInfoContent: (publicKey: any, prefix: any) => {
+              const certContent = certificate.replace(/(?:\r\n|\r|\n)/g, ""); // Remover saltos de línea del certificado
+              return `<X509Data><X509Certificate>${certContent}</X509Certificate></X509Data>`;
+            },
+          });
 
-            sig.addReference(/*"#" + idAtributo, */{
+          const jsonXML = await xml2js.parseStringPromise(xmlString);
+          const idAtributo = jsonXML.rDE.DE[0].$.Id;
+
+          sig.addReference(
+            /*"#" + idAtributo, */ {
               xpath: "//*[local-name()='DE']",
               digestAlgorithm: "http://www.w3.org/2001/04/xmlenc#sha256",
-              transforms: ["http://www.w3.org/2000/09/xmldsig#enveloped-signature", "http://www.w3.org/2001/10/xml-exc-c14n#"],
-            });
-            sig.signatureAlgorithm = 'http://www.w3.org/2001/04/xmldsig-more#rsa-sha256'; // Algoritmo de firma RSA con SHA-256
-            sig.canonicalizationAlgorithm = "http://www.w3.org/2001/10/xml-exc-c14n#";
+              transforms: [
+                "http://www.w3.org/2000/09/xmldsig#enveloped-signature",
+                "http://www.w3.org/2001/10/xml-exc-c14n#",
+              ],
+            }
+          );
+          sig.signatureAlgorithm =
+            "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256"; // Algoritmo de firma RSA con SHA-256
+          sig.canonicalizationAlgorithm =
+            "http://www.w3.org/2001/10/xml-exc-c14n#";
 
-            // Calcular la firma
-            sig.computeSignature(xmlString);
+          // Calcular la firma
+          sig.computeSignature(xmlString);
 
-            // Obtener la firma en formato XML
-            const xmlWithSignature = sig.getSignedXml();
+          // Obtener la firma en formato XML
+          const xmlWithSignature = sig.getSignedXml();
 
-            xmlFirmado += xmlWithSignature + separator;
-          }
+          xmlFirmado += xmlWithSignature + separator;
+        }
 
-          //Retira el ultimo _SEPARATOR_
-          xmlFirmado = xmlFirmado.substring(0, xmlFirmado.length - separator.length);
+        //Retira el ultimo _SEPARATOR_
+        xmlFirmado = xmlFirmado.substring(
+          0,
+          xmlFirmado.length - separator.length
+        );
 
-          resolve(xmlFirmado);
+        resolve(xmlFirmado);
       } catch (e) {
         console.error(e);
         reject(e);
@@ -86,7 +95,7 @@ class XMLDsigNode {
     } else {
       throw Error(file + " no encontrado!");
     }
-  }  
+  }
 
   openFile(file: string, passphase: string) {
     this.openCertificate(file);
@@ -123,7 +132,7 @@ class XMLDsigNode {
       }
     }
     return null;
-  }  
+  }
 }
 
 export default new XMLDsigNode();
