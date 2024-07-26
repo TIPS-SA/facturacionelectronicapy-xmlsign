@@ -106,7 +106,7 @@ class XMLDsigNode {
         // Configurar la clave privada para firmar (ejemplo, deberías cargar tu propia clave privada)
 
         let xmlFirmado = "";
-        
+
         const sig = new SignedXml({
           publicKey: this.getCertificate(),
           privateKey: this.getPrivateKey(),
@@ -142,7 +142,7 @@ class XMLDsigNode {
         const xmlWithSignature = sig.getSignedXml();
 
         xmlFirmado += xmlWithSignature;
-       
+
         resolve(xmlFirmado);
       } catch (e) {
         console.error(e);
@@ -155,12 +155,7 @@ class XMLDsigNode {
     });
   }
 
-  public async signEvento(
-    xmlString: any,
-    tag: any,
-    file: any,
-    password: any
-  ) {
+  public async signEvento(xmlString: any, tag: any, file: any, password: any) {
     return new Promise(async (resolve, reject) => {
       var dsig = null;
       try {
@@ -186,7 +181,10 @@ class XMLDsigNode {
         });
 
         const jsonXML = await xml2js.parseStringPromise(xmlString);
-        const idAtributo = jsonXML['env:Envelope']['env:Body'][0]['rEnviEventoDe'][0]['dEvReg'][0]['gGroupGesEve'][0]['rGesEve'][0][tag][0].$.Id;
+        const idAtributo =
+          jsonXML["env:Envelope"]["env:Body"][0]["rEnviEventoDe"][0][
+            "dEvReg"
+          ][0]["gGroupGesEve"][0]["rGesEve"][0][tag][0].$.Id;
 
         sig.addReference(
           /*"#" + idAtributo, */ {
@@ -205,7 +203,10 @@ class XMLDsigNode {
 
         // Calcular la firma
         sig.computeSignature(xmlString, {
-          location: { reference: "//*[local-name()='" + tag + "']", action: "after" }
+          location: {
+            reference: "//*[local-name()='" + tag + "']",
+            action: "after",
+          },
         });
 
         // Obtener la firma en formato XML
