@@ -24,6 +24,17 @@ xmlsign
 
 ```
 
+### Firmar Evento XML
+
+TypeScript:
+```typescript
+import xmlsign from 'facturacionelectronicapy-xmlsign';
+
+xmlsign
+.signXMLEvento(xmlString, '/full_path/Certificado.p12', '123456')
+.then(xmlFirmado => console.log("XML firmado", xmlFirmado));
+
+```
 Para saber como generar el Archivo XML visita éste proyecto de Git visitar: 
 https://github.com/marcosjara/facturacionelectronicapy-xmlgen
 
