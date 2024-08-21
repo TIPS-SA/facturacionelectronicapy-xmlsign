@@ -276,8 +276,8 @@ class XMLDsig {
             } catch (err) {
               console.error(err);
             }
-
-            resolve(`${stdout}`);
+            let respuestaJson = JSON.parse(`${stdout}`);
+            resolve(respuestaJson);
           }
         );
       });

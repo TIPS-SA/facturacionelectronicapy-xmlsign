@@ -3,8 +3,7 @@ const fs = require("fs");
 const { SignedXml, FileKeyInfo } = require("xml-crypto");
 const xmlbuilder = require("xmlbuilder");
 const xml2js = require("xml2js");
-//const pkcs12 = require('PKCS12');
-//import pkcs12 from "PKCS12";
+
 import forge from "node-forge";
 
 class XMLDsigNode {
@@ -270,6 +269,22 @@ class XMLDsigNode {
       }
     }
     return null;
+  }
+
+  public async getExpiration (file: string, password: string) {
+      return new Promise(async (resolve, reject) => {
+
+      const p12File = fs.readFileSync(file);
+      const p12Asn1 = forge.asn1.fromDer(forge.util.createBuffer(p12File.toString('binary')));
+
+      const p12 = forge.pkcs12.pkcs12FromAsn1(p12Asn1, password); // Cambia 'your-password' por la contraseña de tu archivo .p12
+      
+      const certBag1: any = p12.getBags({ bagType: forge.pki.oids.certBag })
+      const certBag = certBag1[forge.pki.oids.certBag][0];
+      const certificate = certBag.cert;
+
+      resolve(certificate.validity);
+    });
   }
 }
 
