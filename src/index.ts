@@ -67,7 +67,11 @@ class DESign {
     //return dsigNode.signDocument([xml], "DE", file, password);
   };
 
-  getExpiration = (file: any, password: any, useNodeJS?: boolean): Promise<any> => {
+  getExpiration = (
+    file: any,
+    password: any,
+    useNodeJS?: boolean
+  ): Promise<any> => {
     if (useNodeJS == true) {
       return dsigNode.getExpiration(file, password);
     } else {
