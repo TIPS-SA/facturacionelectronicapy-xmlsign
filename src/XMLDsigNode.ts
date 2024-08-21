@@ -278,16 +278,15 @@ class XMLDsigNode {
         const p12Asn1 = forge.asn1.fromDer(
           forge.util.createBuffer(p12File.toString("binary"))
         );
-  
+
         const p12 = forge.pkcs12.pkcs12FromAsn1(p12Asn1, password); // Cambia 'your-password' por la contraseña de tu archivo .p12
-  
+
         const certBag1: any = p12.getBags({ bagType: forge.pki.oids.certBag });
         const certBag = certBag1[forge.pki.oids.certBag][0];
         const certificate = certBag.cert;
-  
-        resolve(certificate.validity);
 
-      } catch(error) {
+        resolve(certificate.validity);
+      } catch (error) {
         reject(error);
       }
     });

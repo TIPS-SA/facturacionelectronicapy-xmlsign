@@ -278,8 +278,8 @@ class XMLDsig {
             }
 
             let respuestaJson = {};
-            if (stdout && (stdout+'').startsWith('{')) {
-              respuestaJson = JSON.parse(`${stdout}`)
+            if (stdout && (stdout + "").startsWith("{")) {
+              respuestaJson = JSON.parse(`${stdout}`);
             }
             resolve(respuestaJson);
           }
