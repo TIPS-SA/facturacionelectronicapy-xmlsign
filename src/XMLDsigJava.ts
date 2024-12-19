@@ -48,7 +48,9 @@ class XMLDsig {
                 console.log(stderr.cmd);
                 stderr.code = stderr.killed = stderr.signal = stderr.cmd = null;
 
-                reject(stderr);
+                if (!stderr.startsWith("Picked up JAVA_TOOL_OPTIONS")) {  //Warning que no debe ser tomado com error
+                  reject(stderr);
+                }
               }
             }
 
@@ -59,20 +61,16 @@ class XMLDsig {
                 console.log(error.cmd);
                 error.code = error.killed = error.signal = error.cmd = null;
 
-                reject(error);
+                if (!error.startsWith("Picked up JAVA_TOOL_OPTIONS")) {  //Warning que no debe ser tomado com error
+                  reject(error);
+                }
               }
             }
 
             try {
               fs.unlinkSync(tmpXMLToSign);
-              //file removed
             } catch (err) {}
 
-            //console.log(`signedXML: ${stdout}`);
-
-            //resolve(Buffer.from(`${stdout}`,'utf8').toString());
-            //fs.writeFileSync(tmpXMLToSign + ".result.xml", `${stdout}`, {encoding: 'utf8'});
-            //let resultXML = fs.readFileSync(tmpXMLToSign + ".result.xml", {encoding: 'utf8'});
             resolve(`${stdout}`);
           }
         );
@@ -149,7 +147,9 @@ class XMLDsig {
                     stderr.cmd =
                       null;
 
-                  reject(stderr);
+                  if (!stderr.startsWith("Picked up JAVA_TOOL_OPTIONS")) {  //Warning que no debe ser tomado com error
+                    reject(stderr);
+                  }
                 }
               }
             }
@@ -160,7 +160,9 @@ class XMLDsig {
                   console.log(error.cmd);
                   error.code = error.killed = error.signal = error.cmd = null;
 
-                  reject(error);
+                  if (!stderr.startsWith("Picked up JAVA_TOOL_OPTIONS")) {  //Warning que no debe ser tomado com error
+                    reject(error);
+                  }
                 }
               }
             }
@@ -175,11 +177,6 @@ class XMLDsig {
               console.error(err);
             }
 
-            //console.log(`signedXML: ${stdout}`);
-
-            //resolve(Buffer.from(`${stdout}`,'utf8').toString());
-            //fs.writeFileSync(tmpXMLToSign + ".result.xml", `${stdout}`, {encoding: 'utf8'});
-            //let resultXML = fs.readFileSync(tmpXMLToSign + ".result.xml", {encoding: 'utf8'});
             resolve(`${stdOutProcesed}`);
           }
         );
@@ -215,10 +212,14 @@ class XMLDsig {
           { encoding: "UTF-8" },
           (error: any, stdout: any, stderr: any) => {
             if (error) {
-              reject(error);
+              if (!error.startsWith("Picked up JAVA_TOOL_OPTIONS")) {  //Warning que no debe ser tomado com error
+                reject(error);
+              }
             }
             if (stderr) {
-              reject(stderr);
+              if (!stderr.startsWith("Picked up JAVA_TOOL_OPTIONS")) {  //Warning que no debe ser tomado com error
+                reject(stderr);
+              }
             }
 
             try {
@@ -228,11 +229,6 @@ class XMLDsig {
               console.error(err);
             }
 
-            //console.log(`signedXML: ${stdout}`);
-
-            //resolve(Buffer.from(`${stdout}`,'utf8').toString());
-            //fs.writeFileSync(tmpXMLToSign + ".result.xml", `${stdout}`, {encoding: 'utf8'});
-            //let resultXML = fs.readFileSync(tmpXMLToSign + ".result.xml", {encoding: 'utf8'});
             resolve(`${stdout}`);
           }
         );
@@ -265,10 +261,14 @@ class XMLDsig {
           { encoding: "UTF-8" },
           (error: any, stdout: any, stderr: any) => {
             if (error) {
-              reject(new Error(error));
+              if (!error.startsWith("Picked up JAVA_TOOL_OPTIONS")) {  //Warning que no debe ser tomado com error
+                reject(new Error(error));
+              }
             }
             if (stderr) {
-              reject(new Error(stderr));
+              if (!stderr.startsWith("Picked up JAVA_TOOL_OPTIONS")) {  //Warning que no debe ser tomado com error
+                reject(new Error(stderr));
+              }
             }
 
             try {
