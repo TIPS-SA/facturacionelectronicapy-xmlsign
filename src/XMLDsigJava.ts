@@ -48,7 +48,8 @@ class XMLDsig {
                 console.log(stderr.cmd);
                 stderr.code = stderr.killed = stderr.signal = stderr.cmd = null;
 
-                if (!stderr.startsWith("Picked up JAVA_TOOL_OPTIONS")) {  //Warning que no debe ser tomado com error
+                if (!stderr.startsWith("Picked up JAVA_TOOL_OPTIONS")) {
+                  //Warning que no debe ser tomado com error
                   reject(stderr);
                 }
               }
@@ -61,7 +62,8 @@ class XMLDsig {
                 console.log(error.cmd);
                 error.code = error.killed = error.signal = error.cmd = null;
 
-                if (!error.startsWith("Picked up JAVA_TOOL_OPTIONS")) {  //Warning que no debe ser tomado com error
+                if (!error.startsWith("Picked up JAVA_TOOL_OPTIONS")) {
+                  //Warning que no debe ser tomado com error
                   reject(error);
                 }
               }
@@ -147,7 +149,8 @@ class XMLDsig {
                     stderr.cmd =
                       null;
 
-                  if (!stderr.startsWith("Picked up JAVA_TOOL_OPTIONS")) {  //Warning que no debe ser tomado com error
+                  if (!stderr.startsWith("Picked up JAVA_TOOL_OPTIONS")) {
+                    //Warning que no debe ser tomado com error
                     reject(stderr);
                   }
                 }
@@ -160,7 +163,8 @@ class XMLDsig {
                   console.log(error.cmd);
                   error.code = error.killed = error.signal = error.cmd = null;
 
-                  if (!stderr.startsWith("Picked up JAVA_TOOL_OPTIONS")) {  //Warning que no debe ser tomado com error
+                  if (!stderr.startsWith("Picked up JAVA_TOOL_OPTIONS")) {
+                    //Warning que no debe ser tomado com error
                     reject(error);
                   }
                 }
@@ -212,12 +216,14 @@ class XMLDsig {
           { encoding: "UTF-8" },
           (error: any, stdout: any, stderr: any) => {
             if (error) {
-              if (!error.startsWith("Picked up JAVA_TOOL_OPTIONS")) {  //Warning que no debe ser tomado com error
+              if (!error.startsWith("Picked up JAVA_TOOL_OPTIONS")) {
+                //Warning que no debe ser tomado com error
                 reject(error);
               }
             }
             if (stderr) {
-              if (!stderr.startsWith("Picked up JAVA_TOOL_OPTIONS")) {  //Warning que no debe ser tomado com error
+              if (!stderr.startsWith("Picked up JAVA_TOOL_OPTIONS")) {
+                //Warning que no debe ser tomado com error
                 reject(stderr);
               }
             }
@@ -261,12 +267,14 @@ class XMLDsig {
           { encoding: "UTF-8" },
           (error: any, stdout: any, stderr: any) => {
             if (error) {
-              if (!error.startsWith("Picked up JAVA_TOOL_OPTIONS")) {  //Warning que no debe ser tomado com error
+              if (!error.startsWith("Picked up JAVA_TOOL_OPTIONS")) {
+                //Warning que no debe ser tomado com error
                 reject(new Error(error));
               }
             }
             if (stderr) {
-              if (!stderr.startsWith("Picked up JAVA_TOOL_OPTIONS")) {  //Warning que no debe ser tomado com error
+              if (!stderr.startsWith("Picked up JAVA_TOOL_OPTIONS")) {
+                //Warning que no debe ser tomado com error
                 reject(new Error(stderr));
               }
             }
