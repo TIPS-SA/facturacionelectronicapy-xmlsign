@@ -1,5 +1,5 @@
-# Facturación Electrónica - Firma de XML para la SET (Paraguay)
-Este módulo NodeJS firma la factura electrónica en formato XML para enviar a la SET mediante el estándar DSIG utilizando certificados del tipo PKCS#12
+# Facturación Electrónica - Firma de XML para SIFEN (Paraguay)
+Este módulo NodeJS firma la factura electrónica en formato XML para enviar a SIFEN mediante el estándar DSIG utilizando certificados del tipo PKCS#12
 
 ## Características
 - Estampa de tiempo de la firma digital automática.
@@ -32,7 +32,7 @@ https://github.com/marcosjara/facturacionelectronicapy-xmlgen
 [Generación de XML](https://www.npmjs.com/package/facturacionelectronicapy-xmlgen)<br/>
 [Firma de XML](https://www.npmjs.com/package/facturacionelectronicapy-xmlsign)<br/>
 [Generación de QR](https://www.npmjs.com/package/facturacionelectronicapy-qrgen)<br/>
-[API de la SET](https://www.npmjs.com/package/facturacionelectronicapy-setapi)<br/>
+[API de SIFEN](https://www.npmjs.com/package/facturacionelectronicapy-setapi)<br/>
 [Generación KUDE](https://www.npmjs.com/package/facturacionelectronicapy-kude)<br/>
 
 
