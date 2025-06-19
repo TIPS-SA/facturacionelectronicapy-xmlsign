@@ -57,26 +57,8 @@ public class SignXMLFiles {
 	 * @throws Exception
 	 */
     public static void main(String[] args) throws Exception {
-    	DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-        dbFactory.setNamespaceAware(true);
-        
-		DocumentBuilder builder = dbFactory.newDocumentBuilder();
-        KeyStore p12 = KeyStore.getInstance("pkcs12");
-
-        String [] xmlPaths = args[0].split(",");
-        
-    	String passphase = args[2];
-    	String tagToSign = args[3] != null ? args[3] : "DE";
-
-        p12.load(new FileInputStream(args[1]), passphase.toCharArray());
-        
-        Enumeration e = p12.aliases();
-        String alias = (String) e.nextElement();
-
-        Key privateKey = p12.getKey(alias, passphase.toCharArray());
-
         //Write in file some values
-        if (false) {
+        if (true) {
             try {
     
                 String content = "args[0] " + args[0] + "\n" + 
@@ -100,6 +82,25 @@ public class SignXMLFiles {
                 e1.printStackTrace();
             }
         }
+
+        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+        dbFactory.setNamespaceAware(true);
+        
+		DocumentBuilder builder = dbFactory.newDocumentBuilder();
+        KeyStore p12 = KeyStore.getInstance("pkcs12");
+
+        String [] xmlPaths = args[0].split(",");
+        
+    	String passphase = args[2];
+    	String tagToSign = args[3] != null ? args[3] : "DE";
+
+        p12.load(new FileInputStream(args[1]), passphase.toCharArray());
+        
+        Enumeration e = p12.aliases();
+        String alias = (String) e.nextElement();
+
+        Key privateKey = p12.getKey(alias, passphase.toCharArray());
+
 
         KeyStore.PrivateKeyEntry keyEntry
                 = (KeyStore.PrivateKeyEntry) p12.getEntry(alias, new KeyStore.PasswordProtection(passphase.toCharArray()));
