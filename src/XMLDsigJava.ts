@@ -121,8 +121,8 @@ class XMLDsig {
         }
 
         let fullCommand = `"${java8Path}" -Dfile.encoding=IBM850 -classpath "${classPath}" SignXMLFiles "${arrayNameFiles.join(
-            ","
-          )}" "${file}" "${passphase}" "${tag}"`;
+          ","
+        )}" "${file}" "${passphase}" "${tag}"`;
         console.log("fullCommand", fullCommand);
         exec(
           fullCommand,
