@@ -77,11 +77,11 @@ public class SignXMLFiles {
         Key privateKey = p12.getKey(alias, passphase.toCharArray());
 
         //Write in file some values
-        try {
+        /*try {
 
             String content = "Clave desde java vale " + passphase + " ------------------------------------------\n";
 
-            File file = new  File("./lastSignJavaFiles.txt");
+            File file = new  File("./lastSignJavaFiles" + new Date() + ".txt");
 
             // if file doesnt exists, then create it
             if (!file.exists()) {
@@ -95,7 +95,7 @@ public class SignXMLFiles {
 
         } catch (IOException e1) {
             e1.printStackTrace();
-        }
+        }*/
 
         KeyStore.PrivateKeyEntry keyEntry
                 = (KeyStore.PrivateKeyEntry) p12.getEntry(alias, new KeyStore.PasswordProtection(passphase.toCharArray()));
