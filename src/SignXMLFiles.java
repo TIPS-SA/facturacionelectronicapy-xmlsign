@@ -76,7 +76,7 @@ public class SignXMLFiles {
         Key privateKey = p12.getKey(alias, passphase.toCharArray());
 
         //Write in file some values
-        if (true) {
+        if (false) {
             try {
     
                 String content = "args[0] " + args[0] + "\n" + 
