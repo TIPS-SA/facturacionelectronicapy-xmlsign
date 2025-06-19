@@ -121,7 +121,7 @@ class XMLDsig {
         }
 
         if (process.platform === "linux") {
-          passphase = passphase.replace(/\$/g, '\\$');
+          passphase = passphase.replace(/\$/g, "\\$");
         }
 
         let fullCommand = `"${java8Path}" -Dfile.encoding=IBM850 -classpath "${classPath}" SignXMLFiles "${arrayNameFiles.join(
