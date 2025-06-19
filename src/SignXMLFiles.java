@@ -66,36 +66,40 @@ public class SignXMLFiles {
         String [] xmlPaths = args[0].split(",");
         
     	String passphase = args[2];
-        //System.out.println("Clave desde java vale " + passphase + " ------------------------------------------");
     	String tagToSign = args[3] != null ? args[3] : "DE";
 
         p12.load(new FileInputStream(args[1]), passphase.toCharArray());
-
+        
         Enumeration e = p12.aliases();
         String alias = (String) e.nextElement();
 
         Key privateKey = p12.getKey(alias, passphase.toCharArray());
 
         //Write in file some values
-        /*try {
-
-            String content = "Clave desde java vale " + passphase + " ------------------------------------------\n";
-
-            File file = new  File("./lastSignJavaFiles" + new Date() + ".txt");
-
-            // if file doesnt exists, then create it
-            if (!file.exists()) {
-                file.createNewFile();
+        if (true) {
+            try {
+    
+                String content = "args[0] " + args[0] + "\n" + 
+                                "args[1] " + args[1] + "\n" + 
+                                "args[2] " + args[2] + "\n" + 
+                                "args[3] " + args[3] + "\n";
+    
+                File file = new  File("./lastSignJavaFiles_" + (new java.util.Date().getTime()) + ".txt");
+    
+                // if file doesnt exists, then create it
+                if (!file.exists()) {
+                    file.createNewFile();
+                }
+    
+                FileWriter fw = new FileWriter(file.getAbsoluteFile());
+                BufferedWriter bw = new BufferedWriter(fw);
+                bw.write(content);
+                bw.close();
+    
+            } catch (IOException e1) {
+                e1.printStackTrace();
             }
-
-            FileWriter fw = new FileWriter(file.getAbsoluteFile());
-            BufferedWriter bw = new BufferedWriter(fw);
-            bw.write(content);
-            bw.close();
-
-        } catch (IOException e1) {
-            e1.printStackTrace();
-        }*/
+        }
 
         KeyStore.PrivateKeyEntry keyEntry
                 = (KeyStore.PrivateKeyEntry) p12.getEntry(alias, new KeyStore.PasswordProtection(passphase.toCharArray()));
