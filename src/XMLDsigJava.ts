@@ -120,6 +120,10 @@ class XMLDsig {
           arrayNameFiles.push(tmpXMLToSign);
         }
 
+        if (process.platform === "linux") {
+          passphase = passphase.replace(/\$/g, '\\$');
+        }
+
         let fullCommand = `"${java8Path}" -Dfile.encoding=IBM850 -classpath "${classPath}" SignXMLFiles "${arrayNameFiles.join(
           ","
         )}" "${file}" "${passphase}" "${tag}"`;
