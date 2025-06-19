@@ -34,8 +34,13 @@ class XMLDsig {
           ".xml";
 
         fs.writeFileSync(tmpXMLToSign, xml, { encoding: "utf8" });
+
+        if (process.platform === "linux") {
+          passphase = passphase.replace(/\$/g, "\\$");
+        }
+
         let fullCommand = `"${java8Path}" -Dfile.encoding=IBM850 -classpath "${classPath}" SignXML "${tmpXMLToSign}" "${file}" "${passphase}" "${tag}"`;
-        console.log("fullCommand", fullCommand);
+        //console.log("fullCommand", fullCommand);
         exec(
           fullCommand,
           { encoding: "UTF-8" },
@@ -127,7 +132,7 @@ class XMLDsig {
         let fullCommand = `"${java8Path}" -Dfile.encoding=IBM850 -classpath "${classPath}" SignXMLFiles "${arrayNameFiles.join(
           ","
         )}" "${file}" "${passphase}" "${tag}"`;
-        console.log("fullCommand", fullCommand);
+        //console.log("fullCommand", fullCommand);
         exec(
           fullCommand,
           { encoding: "UTF-8" },
@@ -218,8 +223,13 @@ class XMLDsig {
 
         fs.writeFileSync(tmpXMLToSign, xml, { encoding: "utf8" });
 
+        if (process.platform === "linux") {
+          passphase = passphase.replace(/\$/g, "\\$");
+        }
+
+        let fullCommand = `"${java8Path}" -Dfile.encoding=IBM850 -classpath "${classPath}" SignXMLEvento "${tmpXMLToSign}" "${file}" "${passphase}"`;
         exec(
-          `"${java8Path}" -Dfile.encoding=IBM850 -classpath "${classPath}" SignXMLEvento "${tmpXMLToSign}" "${file}" "${passphase}"`,
+          fullCommand,
           { encoding: "UTF-8" },
           (error: any, stdout: any, stderr: any) => {
             if (error) {
@@ -269,8 +279,13 @@ class XMLDsig {
 
         const classPath = "" + __dirname + "";
 
+        if (process.platform === "linux") {
+          passphase = passphase.replace(/\$/g, "\\$");
+        }
+
+        let fullCommand = `"${java8Path}" -Dfile.encoding=IBM850 -classpath "${classPath}" CertExpiration "${file}" "${passphase}"`;
         exec(
-          `"${java8Path}" -Dfile.encoding=IBM850 -classpath "${classPath}" CertExpiration "${file}" "${passphase}"`,
+          fullCommand,
           { encoding: "UTF-8" },
           (error: any, stdout: any, stderr: any) => {
             if (error) {

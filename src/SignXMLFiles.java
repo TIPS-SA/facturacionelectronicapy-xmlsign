@@ -58,7 +58,7 @@ public class SignXMLFiles {
 	 */
     public static void main(String[] args) throws Exception {
         //Write in file some values
-        if (true) {
+        if (false) {
             try {
     
                 String content = "args[0] " + args[0] + "\n" + 
