@@ -13,7 +13,6 @@ class DESign {
     } else {
       return dsigJava.signDocument(xml, "DE", file, password);
     }
-    //return dsigJava.signDocument(xml, "DE", file, password);
   };
 
   signXMLFiles = (
@@ -29,15 +28,6 @@ class DESign {
     }
   };
 
-  /*signXMLFilesNode = (
-    xmls: Array<any>,
-    file: any,
-    password: any
-  ): Promise<any> => {
-    //return dsigJava.signDocuments(xmls, "DE", file, password);
-    return dsigNode.signDocument(xmls, "DE", file, password);
-  };*/
-
   signXMLEvento = (
     xml: string,
     file: any,
@@ -49,8 +39,6 @@ class DESign {
     } else {
       return dsigJava.signEvento(xml, "rEve", file, password);
     }
-
-    //return dsigNode.signDocument([xml], "DE", file, password);
   };
 
   signXMLRecibo = (
@@ -64,7 +52,6 @@ class DESign {
     } else {
       return dsigJava.signDocument(xml, "recibo", file, password);
     }
-    //return dsigNode.signDocument([xml], "DE", file, password);
   };
 
   getExpiration = (

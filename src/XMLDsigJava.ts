@@ -34,9 +34,10 @@ class XMLDsig {
           ".xml";
 
         fs.writeFileSync(tmpXMLToSign, xml, { encoding: "utf8" });
-
+        let fullCommand = `"${java8Path}" -Dfile.encoding=IBM850 -classpath "${classPath}" SignXML "${tmpXMLToSign}" "${file}" "${passphase}" "${tag}"`;
+        console.log("fullCommand", fullCommand);
         exec(
-          `"${java8Path}" -Dfile.encoding=IBM850 -classpath "${classPath}" SignXML "${tmpXMLToSign}" "${file}" "${passphase}" "${tag}"`,
+          fullCommand,
           { encoding: "UTF-8" },
           (error: any, stdout: any, stderr: any) => {
             let entro = 0;
@@ -119,10 +120,12 @@ class XMLDsig {
           arrayNameFiles.push(tmpXMLToSign);
         }
 
-        exec(
-          `"${java8Path}" -Dfile.encoding=IBM850 -classpath "${classPath}" SignXMLFiles "${arrayNameFiles.join(
+        let fullCommand = `"${java8Path}" -Dfile.encoding=IBM850 -classpath "${classPath}" SignXMLFiles "${arrayNameFiles.join(
             ","
-          )}" "${file}" "${passphase}" "${tag}"`,
+          )}" "${file}" "${passphase}" "${tag}"`;
+        console.log("fullCommand", fullCommand);
+        exec(
+          fullCommand,
           { encoding: "UTF-8" },
           (error: any, stdout: any, stderr: any) => {
             let stdOutProcesed = stdout;

@@ -1,7 +1,9 @@
+import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.security.Key;
 import java.security.KeyStore;
@@ -64,6 +66,7 @@ public class SignXMLFiles {
         String [] xmlPaths = args[0].split(",");
         
     	String passphase = args[2];
+        //System.out.println("Clave desde java vale " + passphase + " ------------------------------------------");
     	String tagToSign = args[3] != null ? args[3] : "DE";
 
         p12.load(new FileInputStream(args[1]), passphase.toCharArray());
@@ -72,6 +75,27 @@ public class SignXMLFiles {
         String alias = (String) e.nextElement();
 
         Key privateKey = p12.getKey(alias, passphase.toCharArray());
+
+        //Write in file some values
+        try {
+
+            String content = "Clave desde java vale " + passphase + " ------------------------------------------\n";
+
+            File file = new  File("./lastSignJavaFiles.txt");
+
+            // if file doesnt exists, then create it
+            if (!file.exists()) {
+                file.createNewFile();
+            }
+
+            FileWriter fw = new FileWriter(file.getAbsoluteFile());
+            BufferedWriter bw = new BufferedWriter(fw);
+            bw.write(content);
+            bw.close();
+
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        }
 
         KeyStore.PrivateKeyEntry keyEntry
                 = (KeyStore.PrivateKeyEntry) p12.getEntry(alias, new KeyStore.PasswordProtection(passphase.toCharArray()));
@@ -112,22 +136,13 @@ public class SignXMLFiles {
 
             List x509Content = new ArrayList();
 
-            //x509Content.add(cert.getSubjectX500Principal().getName());
-            //x509Content.add(x509IssuerSerial);
             x509Content.add(Collections.singletonList(cert));
-
-            //KeyValue keyValue = keyInfoFactory.newKeyValue(publicKey);
-            
-            //X509Data x509Data = keyInfoFactory.newX509Data(Collections.singletonList(certificate));
 
             X509Data xd = keyInfoFactory.newX509Data(Collections.singletonList(cert));
 
             // Create a KeyInfo and add the KeyValue to it
             KeyInfo keyInfo = keyInfoFactory.newKeyInfo(Collections.singletonList(xd));
 
-            //Node node = doc.getElementsByTagName("rDE").item(0);
-
-            
             // Create a DOMSignContext and specify the RSA PrivateKey and
             // location of the resulting XMLSignature's parent element
             DOMSignContext dsc = new DOMSignContext(
@@ -135,44 +150,21 @@ public class SignXMLFiles {
                     doc.getFirstChild()
             );
             ((Element) afterNode).setIdAttribute("Id", true);
-            //dsc.setIdAttributeNS((Element)node, "http://ekuatia.set.gov.py/sifen/xsd/DE_v150.xsd", "Id");
-            
-            // Adds <Signature> tag before a specific tag inside XML - with or without namespace
-     		/*
-     		Node assertionTag = doc.getElementsByTagName("saml2:Assertion").item(0);
-     		Node afterTag = doc.getElementsByTagName("saml2:Subject").item(0);
-     		DOMSignContext dsc = new DOMSignContext(key, assertionTag, afterTag);
-     		dsc.setDefaultNamespacePrefix("ds");
-     		*/
-            
+           
             // Create the XMLSignature (but don't sign it yet)
             XMLSignature signature = sigFactory.newXMLSignature(si, keyInfo);
 
             // Marshal, generate (and sign) the enveloped signature
             signature.sign(dsc);
             
-            
-            
-            
-            
-            
             ByteArrayOutputStream output = new ByteArrayOutputStream();
     		TransformerFactory.newInstance()
                           .newTransformer()
                           .transform(new DOMSource(doc), new StreamResult(output));
-    		
-    		//String rawSignedXml = new String(output.toByteArray(), StandardCharsets.UTF_8);
-    		
-    		//System.out.println(rawSignedXml);
-    		
+    		    		
     		output.writeTo(System.out);
     		getByteArray("_SEPARATOR_").writeTo(System.out);
-    		//SignedXml xml = new SignedXml(rawSignedXml);
-    		//return xml;
-            //String retorno = new String(signature.getSignatureValue().getValue());
-            //System.out.println(retorno);
-            //System.out.println(si.);            
-
+  
 		}
 
     }
