@@ -154,16 +154,19 @@ class XMLDsig {
               if (stderr) {
                 if (!stdOutProcesed.includes("_SEPARATOR_")) {
                   entro++;
-                  console.log(stderr.cmd);
-                  stderr.code =
+                  //console.log("stderr", stderr, typeof stderr);
+                  //console.log(stderr.cmd);
+
+                  /*stderr.code =
                     stderr.killed =
                     stderr.signal =
                     stderr.cmd =
                       null;
-
+                  */
                   if (!stderr.startsWith("Picked up JAVA_TOOL_OPTIONS")) {
                     //Warning que no debe ser tomado com error
-                    reject(stderr);
+                    reject(new Error(stderr));
+                    return;
                   }
                 }
               }
@@ -178,6 +181,7 @@ class XMLDsig {
                   if (!stderr.startsWith("Picked up JAVA_TOOL_OPTIONS")) {
                     //Warning que no debe ser tomado com error
                     reject(error);
+                    return;
                   }
                 }
               }
@@ -190,7 +194,7 @@ class XMLDsig {
               }
               //file removed
             } catch (err) {
-              console.error(err);
+              console.error("Error al borrar referencias ", err);
             }
 
             resolve(`${stdOutProcesed}`);
